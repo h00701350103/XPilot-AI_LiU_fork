@@ -2,7 +2,7 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
+ *      BjÃ¸rn Stabell        <bjoern@xpilot.org>
  *      Ken Ronny Schouten   <ken@xpilot.org>
  *      Bert Gijsbers        <bert@xpilot.org>
  *      Dick Balaska         <dick@xpilot.org>
@@ -36,7 +36,7 @@
 #include "version.h"
 #include "config.h"
 #include "serverconst.h"
-#include "global.h"
+#include "global.h" //ADDED FOR AI -EGG //globalAI rename to globalAI -JL
 #include "proto.h"
 #include "map.h"
 #include "score.h"
@@ -1872,6 +1872,8 @@ void Detach_ball(int ind, int obj)
 void Kill_player(int ind)
 {
     Explode_fighter(ind);
+    if ((double)randomMT() / 0xffffffff < switchBase) //ADDED FOR AI -EGG
+        Pick_startpos(ind);
     Player_death_reset(ind);
 }
 
@@ -2002,4 +2004,5 @@ int Team_immune(int id1, int id2)
 
     return 0;
 }
+
 

@@ -2,7 +2,7 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
+ *      BjÃ¸rn Stabell        <bjoern@xpilot.org>
  *      Ken Ronny Schouten   <ken@xpilot.org>
  *      Bert Gijsbers        <bert@xpilot.org>
  *      Dick Balaska         <dick@xpilot.org>
@@ -36,7 +36,7 @@
 #include "version.h"
 #include "config.h"
 #include "serverconst.h"
-#include "global.h"
+#include "global.h" //ADDED FOR AI -EGG //globalAI.h renamed to global.h
 #include "proto.h"
 #include "defaults.h"
 #include "error.h"
@@ -55,6 +55,7 @@ DFLOAT		ballMass;		/* Default mass of balls */
 DFLOAT		minItemMass;		/* Minimum mass of each item */
 DFLOAT		ShotsMass;		/* Default mass of shots */
 DFLOAT		ShotsSpeed;		/* Default speed of shots */
+DFLOAT		switchBase;	//ADDED FOR AI -EGG
 int		ShotsLife;		/* Default number of ticks */
 					/* each shot will live */
 bool		shotHitFuelDrainUsesKineticEnergy;	/* see option name */
@@ -465,6 +466,16 @@ static option_desc options[] = {
 	valInt,
 	tuner_dummy,
 	"Number of frames per automatic fire (0=off).\n",
+	OPT_ORIGIN_ANY | OPT_VISIBLE
+    },
+    { //ADDED FOR AI -EGG
+	"switchBase",
+	"switchBase",
+	"0.0",
+	&switchBase,
+	valReal,
+	tuner_dummy,
+	"Probability that a ship will change home base each death.\n",
 	OPT_ORIGIN_ANY | OPT_VISIBLE
     },
     {
@@ -3482,4 +3493,5 @@ option_desc* Find_option_by_name(const char* name)
     }
     return NULL;
 }
+
 

@@ -2,7 +2,7 @@
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
+ *      BjÃ¸rn Stabell        <bjoern@xpilot.org>
  *      Ken Ronny Schouten   <ken@xpilot.org>
  *      Bert Gijsbers        <bert@xpilot.org>
  *      Dick Balaska         <dick@xpilot.org>
@@ -269,6 +269,7 @@ extern DFLOAT		itemConcentratorProb;
 extern int		asteroidConcentratorRadius;
 extern DFLOAT		asteroidConcentratorProb;
 extern DFLOAT		gameDuration;
+extern DFLOAT		switchBase; //ADDED FOR AI -EGG
 extern bool		allowViewing;
 extern int		game_lock;
 
@@ -326,4 +327,5 @@ extern long		KILLING_SHOTS;
 extern unsigned		SPACE_BLOCKS;
 
 #endif /* GLOBAL_H */
+
 
