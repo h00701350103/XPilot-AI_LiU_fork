@@ -226,7 +226,7 @@ OBJS1 = about.o blockbitmaps.o \
 	paintobjects.o paintradar.o query.o record.o sim.o \
 	syslimit.o talk.o talkmacros.o textinterface.o texture.o \
 	usleep.o welcome.o widget.o xeventhandlers.o \
-	xevent.o xinit.o xpilot.o xpmread.o \
+	xevent.o xinit.o xpilot.o xpmread.o pyAI.o \
 	$(AUDIOOBJ)
 SRCS1 = about.c blockbitmaps.c \
 	caudio.c client.c colors.c configure.c \
@@ -237,7 +237,7 @@ SRCS1 = about.c blockbitmaps.c \
 	paintobjects.c paintradar.c query.c record.c sim.c \
 	syslimit.c talk.c talkmacros.c textinterface.c texture.c \
 	usleep.c welcome.c widget.c xeventhandlers.c \
-	xevent.c xinit.c xpilot.c xpmread.c \
+	xevent.c xinit.c xpilot.c xpmread.c pyAI.c \
 	$(AUDIOSRC)
 
 #

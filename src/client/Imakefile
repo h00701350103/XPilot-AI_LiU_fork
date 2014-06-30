@@ -111,7 +111,7 @@ SRCS = \
 	paintobjects.c paintradar.c query.c record.c sim.c \
 	syslimit.c talk.c talkmacros.c textinterface.c texture.c \
 	usleep.c welcome.c widget.c xeventhandlers.c \
-	xevent.c xinit.c xpilot.c xpmread.c \
+	xevent.c xinit.c xpilot.c xpmread.c pyAI.c \
 	$(AUDIOSRC)
 
 # keep this variable consistent with its counterpart in ../Makefile.std
@@ -125,7 +125,7 @@ OBJS = \
 	paintobjects.o paintradar.o query.o record.o sim.o \
 	syslimit.o talk.o talkmacros.o textinterface.o texture.o \
 	usleep.o welcome.o widget.o xeventhandlers.o \
-	xevent.o xinit.o xpilot.o xpmread.o \
+	xevent.o xinit.o xpilot.o xpmread.o pyAI.o \
 	$(AUDIOOBJ)
 
 DEPLIBS = $(COMMON)libxpcommon.a $(DEPXLIB)
