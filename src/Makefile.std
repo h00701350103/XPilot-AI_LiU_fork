@@ -275,6 +275,13 @@ OBJS3 = xp-replay.o buttons.o
 SRCS3 = xp-replay.c buttons.c
 
 #
+# The python API libpyai.so
+# Added by John Litborn summer 2014
+# 
+OBJS4 =  pyAI.o
+SRCS4 = pyAI.c
+
+#
 # Variables to locate, make, and run the msub program
 # when we are in one of the subdirectories.
 #
@@ -292,7 +299,7 @@ LFLAGS=$(CFLAGS)
 
 LIBCOMMON=libxpcommon.a
 
-TARGETS=make-common make-client make-server make-replay
+TARGETS=make-common make-client make-server make-replay make-python-api
 
 all:
 	@echo "Please specify your system.  Choose one of:"
@@ -327,6 +334,16 @@ make-replay:
 
 xp-replay: $(OBJS3)
 	$(CC) $(LFLAGS) -o $@ $(OBJS3) $(XLIB) $(MLIB)
+
+#John Litborn: Summer 2014
+
+make-python-api:
+	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
+                "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+
+libpyAI.so: $(OBJS1) $(OBJS4)
+        $(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+
 
 hppa:
 	@$(MAKE) -f Makefile.std $(TARGETS) \
@@ -427,7 +444,7 @@ install:
 
 install-binaries:
 	if [ ! -d $(BINDIR)/. ]; then mkdir -p $(BINDIR); fi
-	cp client/xpilot server/xpilots replay/xp-replay $(BINDIR)
+	cp client/xpilot server/xpilots replay/xp-replay client/libpyAI.so $(BINDIR)
 	-strip $(BINDIR)/xpilot $(BINDIR)/xpilots $(BINDIR)/xp-replay
 	-chmod +x $(BINDIR)/xpilot $(BINDIR)/xpilots $(BINDIR)/xp-replay
 
