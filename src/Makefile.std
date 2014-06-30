@@ -316,7 +316,7 @@ $(LIBCOMMON): $(OBJS0)
 
 make-client:
 	cd client && $(MAKE) -f ../Makefile.std xpilot \
-		"CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+		"CC=$(CC)" -I/usr/include/python3.2 -I/usr/include/python3.3 "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
 xpilot: $(OBJS1)
 	$(CC) $(LFLAGS) -o $@ $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
