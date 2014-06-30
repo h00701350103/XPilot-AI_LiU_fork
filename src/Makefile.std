@@ -278,8 +278,8 @@ SRCS3 = xp-replay.c buttons.c
 # The python API libpyai.so
 # Added by John Litborn summer 2014
 # 
-OBJS4 =  pyAI.o
-SRCS4 = pyAI.c
+#OBJS4 =  pyAI.o
+#SRCS4 = pyAI.c
 
 #
 # Variables to locate, make, and run the msub program
@@ -299,7 +299,7 @@ LFLAGS=$(CFLAGS)
 
 LIBCOMMON=libxpcommon.a
 
-TARGETS=make-common make-client make-server make-replay make-python-api
+TARGETS=make-common make-client make-server make-replay# make-python-api
 
 all:
 	@echo "Please specify your system.  Choose one of:"
@@ -337,12 +337,12 @@ xp-replay: $(OBJS3)
 
 #John Litborn: Summer 2014
 
-make-python-api:
-	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
-                "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+#make-python-api:
+#	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
+#                "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
-libpyAI.so: $(OBJS1) $(OBJS4)
-        $(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+#libpyAI.so: $(OBJS1) $(OBJS4)
+#        $(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 
 hppa:
