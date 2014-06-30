@@ -1,3 +1,4 @@
+//Modified by: Evan Gray - May 2012
 /* $Id: default.c,v 5.19 2002/05/14 15:44:32 bertg Exp $
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
@@ -83,15 +84,25 @@ char default_version[] = VERSION;
 /*
  * Default fonts
  */
-#define GAME_FONT	"-*-times-*-*-*--18-*-*-*-*-*-iso8859-1"
-#define MESSAGE_FONT	"-*-times-*-*-*--14-*-*-*-*-*-iso8859-1"
-#define SCORE_LIST_FONT	"-*-fixed-bold-*-*--13-*-*-*-c-*-iso8859-1"
-#define BUTTON_FONT	"-*-*-bold-o-*--14-*-*-*-*-*-iso8859-1"
-#define TEXT_FONT	"-*-*-bold-i-*--14-*-*-*-p-*-iso8859-1"
-#define TALK_FONT	"-*-fixed-bold-*-*--15-*-*-*-c-*-iso8859-1"
-#define KEY_LIST_FONT	"-*-fixed-medium-r-*--10-*-*-*-c-*-iso8859-1"
-#define MOTD_FONT	"-*-courier-bold-r-*--14-*-*-*-*-*-iso8859-1"
-
+//#define GAME_FONT	"-*-fixed-*-*-*--18-*-*-*-*-*-iso8859-1"
+//#define MESSAGE_FONT	"-*-fixed-*-*-*--14-*-*-*-*-*-iso8859-1"
+//#define SCORE_LIST_FONT	"-*-fixed-bold-*-*--13-*-*-*-c-*-iso8859-1"
+//#define BUTTON_FONT	"-*-*-bold-*-*--14-*-*-*-*-*-iso8859-1"
+//#define TEXT_FONT	"-*-*-bold-*-*--14-*-*-*-*-*-iso8859-1"
+//#define TALK_FONT	"-*-fixed-bold-*-*--15-*-*-*-c-*-iso8859-1"
+//#define KEY_LIST_FONT	"-*-fixed-medium-r-*--10-*-*-*-c-*-iso8859-1"
+//#define MOTD_FONT	"-*-fixed-bold-r-*--14-*-*-*-*-*-iso8859-1"
+/*
+ * Default fonts that won't cause problems - EGG
+ */
+#define GAME_FONT	"-*-*-*-*-*--18-*-*-*-*-*-*-*"
+#define MESSAGE_FONT	"-*-*-*-*-*--14-*-*-*-*-*-*-*"
+#define SCORE_LIST_FONT	"-*-*-bold-*-*--13-*-*-*-*-*-*-*"
+#define BUTTON_FONT	"-*-*-bold-*-*--14-*-*-*-*-*-*-*"
+#define TEXT_FONT	"-*-*-bold-*-*--14-*-*-*-*-*-*-*"
+#define TALK_FONT	"-*-*-bold-*-*--15-*-*-*-*-*-*-*"
+#define KEY_LIST_FONT	"-*-*-medium-*-*--10-*-*-*-*-*-*-*"
+#define MOTD_FONT	"-*-*-bold-*-*--14-*-*-*-*-*-*-*"
 
 char			myName[] = "xpilot";
 char			myClass[] = "XPilot";

@@ -1,3 +1,4 @@
+//Modified by: Evan Gray - May 2012
 /* $Id: client.h,v 5.8 2002/01/17 19:51:16 bertg Exp $
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
@@ -373,3 +374,19 @@ extern	void audioEvents();
 
 #endif
 
+//added extern so that AI code could see -EGG
+extern int num_others;
+extern other_t *Others;
+extern int num_playing_teams;
+//added for headless
+extern int headless;
+//added so AI code can see -hatten
+extern fuelstation_t  *fuels;
+extern int            num_fuels;
+extern homebase_t     *bases;
+extern int            num_bases;
+extern cannontime_t   *cannons;
+extern int            num_cannons;
+extern target_t       *targets;
+extern int            num_targets;
+extern checkpoint_t   checks[26]; //MAX_CHECKPOINT

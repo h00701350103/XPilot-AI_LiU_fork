@@ -36,7 +36,7 @@
 #include "commonproto.h"
 //end from xpilot.c -EGG
 //from xpclient_x11.h -EGG
-#include "clientAI.h" //originally xpclient.h -EGG
+#include "client.h" //originally xpclient.h -EGG
 #ifdef HAVE_X11_X_H
 #  include <X11/X.h>
 #endif
@@ -131,7 +131,7 @@ int maxTurn = 16; //Added for [s/g]etMaxTurn[/Deg/Rad]
 //Added for headless -EGG
 int headless =0;
 //Defined some stuff to avoid undefined warnings -EGG
-extern int mainAI(int argc, char* argv[]);
+extern int main(int argc, char* argv[]);
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 score_object_t  score_objects[MAX_SCORE_OBJECTS];
 //Defined selfTrackingDeg & selfHeadingDeg to avoid needing pyAI.h -EGG
@@ -4670,7 +4670,7 @@ static PyObject* py_start(PyObject* pySelf, PyObject* args) {
     //Set AI loop
     args = Py_BuildValue("(O)",temp);
     py_switchLoop(pySelf, args);
-    return Py_BuildValue("i",mainAI(argc,argv));
+    return Py_BuildValue("i",main(argc,argv));
 }
 static PyObject* py_version(PyObject* pySelf, PyObject* args) {
     return Py_BuildValue("s","Xpilot-AI-fork 1.0 20130930");

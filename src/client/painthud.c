@@ -58,6 +58,7 @@
 #include "protoclient.h"
 #include "blockbitmaps.h"
 #include "commonproto.h"
+#include "client.h"
 
 char painthud_version[] = VERSION;
 
@@ -1102,7 +1103,7 @@ void Add_message(char *message)
 	}
     }
 #endif
-
+    if (headless < 1) // HEADLESS -EGG
     msg_set[0]->pixelLen = XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
 
     /* Print messages to standard output.

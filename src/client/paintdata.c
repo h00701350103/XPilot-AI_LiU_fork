@@ -1,3 +1,4 @@
+//Modified by: Evan Gray - May 2012
 /* $Id: paintdata.c,v 5.9 2002/04/13 16:10:59 bertg Exp $
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
@@ -451,11 +452,14 @@ int Handle_start(long server_loops)
     phasingtime = -1;
     return 0;
 }
-
+extern void injectAI(); //Allow for inject -EGG
 int Handle_end(long server_loops)
 {
+	//probably need to add an if statement here to disable inject when playing with normal client
+    injectAI(); //Inject our code -EGG
     end_loops = server_loops;
     snooping = self && (eyesId != self->id);
+    if (headless < 1) // HEADLESS -EGG
     Paint_frame();
     return 0;
 }

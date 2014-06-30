@@ -1,3 +1,5 @@
+//Modified by: Evan Gray - May 2012
+//Modified by: Hatten - Summer 2013
 /* $Id: client.c,v 5.12 2002/01/17 19:51:16 bertg Exp $
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
@@ -57,6 +59,9 @@
 #include "portability.h"
 #include "talk.h"
 #include "commonproto.h"
+#include "client.h" //added for headless -EGG
+
+int num_playing_teams; //defined here for extern purposes -EGG
 
 char client_version[] = VERSION;
 
@@ -176,26 +181,27 @@ char 	audioServer[MAX_CHARS];	/* audio server */
 int 	maxVolume;		/* maximum volume (in percent) */
 #endif /* SOUND */
 
-static other_t		*Others = 0;
-static int		num_others = 0,
+other_t		*Others = 0; //removed static so that AI code could see -EGG
+int		num_others = 0, //removed static so that AI code could see -EGG
 			max_others = 0;
 
+//removed static so that AI code could see -hatten
 static DFLOAT		teamscores[MAX_TEAMS];
 
-static fuelstation_t	*fuels = 0;
-static int		num_fuels = 0;
+fuelstation_t	*fuels = 0;
+int		num_fuels = 0;
 
-static homebase_t	*bases = 0;
-static int		num_bases = 0;
+homebase_t	*bases = 0;
+int		num_bases = 0;
 
-static cannontime_t	*cannons = 0;
-static int		num_cannons = 0;
+cannontime_t	*cannons = 0;
+int		num_cannons = 0;
 
-static target_t		*targets = 0;
-static int		num_targets = 0;
+target_t		*targets = 0;
+int		num_targets = 0;
 
-static checkpoint_t	checks[MAX_CHECKPOINT];
-
+checkpoint_t	checks[MAX_CHECKPOINT];
+//end of removing static
 score_object_t		score_objects[MAX_SCORE_OBJECTS];
 int			score_object = 0;
 
@@ -1234,6 +1240,7 @@ int Handle_score_object(DFLOAT score, int x, int y, char *msg)
 	    sprintf(sobj->hud_msg, "%s %d", msg, (int) rint(score));
 	}
 	sobj->hud_msg_len = strlen(sobj->hud_msg);
+  if (headless < 1) // HEADLESS -EGG
 	sobj->hud_msg_width = XTextWidth(gameFont,
 					 sobj->hud_msg, sobj->hud_msg_len);
     } else
@@ -1247,7 +1254,8 @@ int Handle_score_object(DFLOAT score, int x, int y, char *msg)
 	sprintf(sobj->msg, "%d", (int) rint(score));
     }
     sobj->msg_len = strlen(sobj->msg);
-    sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);
+    if (headless < 1) // HEADLESS -EGG
+    sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len); 
 
     /* Update global index variable */
     score_object = (score_object + 1) % MAX_SCORE_OBJECTS;
@@ -1375,7 +1383,7 @@ void Client_score_table(void)
     }
     if (BIT(Setup->mode, TEAM_PLAY|TIMING) == TEAM_PLAY) {
 	int pos = num_others + 1;
-	int num_playing_teams = 0;
+	num_playing_teams = 0; //defined earlier now -EGG
 	for (i = 0; i < MAX_TEAMS; i++) {
 	    if (team[i].playing) {
 		for (j = 0; j < num_playing_teams; j++) {
@@ -1497,7 +1505,7 @@ int Client_setup(void)
     Map_blue(0, 0, Setup->x, Setup->y);
 
     RadarHeight = (RadarWidth * Setup->y) / Setup->x;
-
+    if (headless < 1) // HEADLESS -EGG
     if (Init_playing_windows() == -1) {
 	return -1;
     }
