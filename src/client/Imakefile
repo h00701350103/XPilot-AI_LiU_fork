@@ -101,7 +101,7 @@ DEFINES = \
 INCLUDES = $(AUDIOINC) -I$(COMMON) -I../../lib/
 
 # keep this variable consistent with its counterpart in ../Makefile.std
-SRCS0 = \
+SRCS = \
 	about.c blockbitmaps.c \
 	caudio.c client.c colors.c configure.c \
 	datagram.c dbuff.c default.c \
@@ -115,7 +115,7 @@ SRCS0 = \
 	$(AUDIOSRC)
 
 # keep this variable consistent with its counterpart in ../Makefile.std
-OBJS0 = \
+OBJS = \
 	about.o blockbitmaps.o \
 	caudio.o client.o colors.o configure.o \
 	datagram.o dbuff.o default.o \
@@ -127,11 +127,6 @@ OBJS0 = \
 	usleep.o welcome.o widget.o xeventhandlers.o \
 	xevent.o xinit.o xpilot.o xpmread.o \
 	$(AUDIOOBJ)
-
-SRCS1 = \
-	pyAI.c
-
-OBJS1 = pyAI.o
 
 DEPLIBS = $(COMMON)libxpcommon.a $(DEPXLIB)
 
@@ -149,8 +144,7 @@ X_LIB = $(XLIB)
 X_LIB = $(XLIBONLY)
 #endif
 
-PROGRAMS = xpilot libpyAI.so
+PROGRAMS = xpilot
 
 ProgramTarget(xpilot,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) $(MATHLIB) $(EXTRALIB))
-ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) $(MATHLIB) $(EXTRALIB))
 CtagFiles(*.[ch] $(COMMON)*.[ch])
