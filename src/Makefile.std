@@ -315,10 +315,10 @@ $(LIBCOMMON): $(OBJS0)
 	ar cql $@ $(OBJS0)
 
 make-client:
-	cd client && $(MAKE) -f ../Makefile.std xpilot \
+	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
 		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
-xpilot: $(OBJS1)
+libpyAI.so: $(OBJS1)
 	$(CC) $(LFLAGS) -o $@ -I/usr/include/python3.3 $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 make-server:

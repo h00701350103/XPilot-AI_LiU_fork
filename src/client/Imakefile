@@ -144,7 +144,7 @@ X_LIB = $(XLIB)
 X_LIB = $(XLIBONLY)
 #endif
 
-PROGRAMS = xpilot
+PROGRAMS = libpyAI.so
 
-ProgramTarget(xpilot,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) $(MATHLIB) $(EXTRALIB))
+ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) $(MATHLIB) $(EXTRALIB))
 CtagFiles(*.[ch] $(COMMON)*.[ch])
