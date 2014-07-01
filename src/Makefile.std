@@ -315,7 +315,7 @@ $(LIBCOMMON): $(OBJS0)
 	ar cql $@ $(OBJS0)
 
 make-client:
-	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
+	cd client && $(MAKE) -f ../Makefile.std libpyAI.so -shared \
 		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
 libpyAI.so: $(OBJS1)
