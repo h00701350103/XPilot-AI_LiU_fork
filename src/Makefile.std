@@ -319,7 +319,7 @@ make-client:
 		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
 libpyAI.so: $(OBJS1)
-	$(CC) $(LFLAGS) -o $@ -I/usr/include/python3.3 $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+	$(CC) $(LFLAGS) -o $@ -shared -I/usr/include/python3.3 $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 make-server:
 	cd server && $(MAKE) -f ../Makefile.std xpilots \
