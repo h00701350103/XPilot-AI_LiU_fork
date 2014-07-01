@@ -297,6 +297,8 @@ MSUBFLAGS = -f ../../Local.config +R"@<" -R">@"
 #
 LFLAGS=$(CFLAGS)
 
+POOPFLAGS=$(CFLAGS) -shared
+
 LIBCOMMON=libxpcommon.a
 
 TARGETS=make-common make-client make-server make-replay# make-python-api
@@ -316,7 +318,7 @@ $(LIBCOMMON): $(OBJS0)
 
 make-client:
 	cd client && $(MAKE) -f ../Makefile.std libpyAI.so -shared \
-		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(POOPFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
 libpyAI.so: $(OBJS1)
 	$(CC) $(LFLAGS) -o $@ -shared -I/usr/include/python3.3 $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
