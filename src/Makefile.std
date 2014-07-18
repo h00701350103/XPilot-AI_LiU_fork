@@ -343,8 +343,8 @@ make-python-api:
 	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
                 "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
-libpyAI.so: $(OBJS1) $(OBJS4)
-	$(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+libpyAI.so: $(OBJS4)
+	$(CC) $(LFLAGS) -o $@ ../client/$(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 
 hppa:
