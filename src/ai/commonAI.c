@@ -29,14 +29,14 @@
 #include "error.h"
 #include "socklib.h"
 #include "net.h"
-#include "connectparam.h"
-#include "protoclient.h"
+#include "../client/connectparam.h"
+#include "../client/protoclient.h"
 #include "portability.h"
 #include "checknames.h"
 #include "commonproto.h"
 //end from xpilot.c -EGG
 //from xpclient_x11.h -EGG
-#include "client.h" //originally xpclient.h -EGG
+#include "../client/client.h" //originally xpclient.h -EGG
 #ifdef HAVE_X11_X_H
 #  include <X11/X.h>
 #endif
@@ -63,16 +63,16 @@
 #include <X11/Xlib.h> //for X graphics -EGG
 #include <X11/keysym.h> //for X keys -EGG
 #endif
-#include "blockbitmaps.h" //originally bitmaps.h -EGG
-#include "dbuff.h"
-#include "paint.h" //originally xpaint.h, moved from below xinit.h -EGG
-#include "paintdata.h"
-#include "record.h"
-#include "widget.h"
+#include "../client/blockbitmaps.h" //originally bitmaps.h -EGG
+#include "../client/dbuff.h"
+#include "../client/paint.h" //originally xpaint.h, moved from below xinit.h -EGG
+#include "../client/paintdata.h"
+#include "../client/record.h"
+#include "../client/widget.h"
 #include "../common/keys.h"
-#include "xevent.h"
+#include "../client/xevent.h"
 //#include "xeventhandlers.h"
-#include "xinit.h"
+#include "../client/xinit.h"
 //end from xpclient_x11.h -EGG
 //#include <sys/ipc.h>
 //#include <sys/shm.h>
@@ -83,8 +83,8 @@
 #include <math.h>
 #include "../common/rules.h"
 #include "../common/setup.h"
-#include "configure.h"
-#include "netclient.h"
+#include "../client/configure.h"
+#include "../client/netclient.h"
 #ifdef _WINDOWS
 # include "../common/NT/winXKey.h" //added for XK_keys
 #endif
