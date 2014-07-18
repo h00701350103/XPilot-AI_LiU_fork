@@ -119,7 +119,7 @@ int queuedOptionCount = 0;
 int maxTurn = 16; //Added for [s/g]etMaxTurn[/Deg/Rad]
 
 //Added for headless -EGG
-int headless =0;
+extern int headless;
 //Defined some stuff to avoid undefined warnings -EGG
 extern int main(int argc, char* argv[]);
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];

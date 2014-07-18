@@ -214,6 +214,8 @@ extern	char		*HistoryMsg[MAX_HIST_MSGS];
 bool			selectionAndHistory = false;
 int			maxLinesInHistory;
 
+int headless = 0;
+
 static fuelstation_t *Fuelstation_by_pos(int x, int y)
 {
     int			i, lo, hi, pos;
