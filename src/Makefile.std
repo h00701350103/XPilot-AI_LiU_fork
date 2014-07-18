@@ -226,7 +226,7 @@ OBJS1 = about.o blockbitmaps.o \
 	paintobjects.o paintradar.o query.o record.o sim.o \
 	syslimit.o talk.o talkmacros.o textinterface.o texture.o \
 	usleep.o welcome.o widget.o xeventhandlers.o \
-	xevent.o xinit.o xpilot.o xpmread.o pyAI.o \
+	xevent.o xinit.o xpilot.o xpmread.o \
 	$(AUDIOOBJ)
 SRCS1 = about.c blockbitmaps.c \
 	caudio.c client.c colors.c configure.c \
@@ -237,7 +237,7 @@ SRCS1 = about.c blockbitmaps.c \
 	paintobjects.c paintradar.c query.c record.c sim.c \
 	syslimit.c talk.c talkmacros.c textinterface.c texture.c \
 	usleep.c welcome.c widget.c xeventhandlers.c \
-	xevent.c xinit.c xpilot.c xpmread.c pyAI.c \
+	xevent.c xinit.c xpilot.c xpmread.c \
 	$(AUDIOSRC)
 
 #
@@ -278,8 +278,8 @@ SRCS3 = xp-replay.c buttons.c
 # The python API libpyai.so
 # Added by John Litborn summer 2014
 # 
-#OBJS4 =  pyAI.o
-#SRCS4 = pyAI.c
+OBJS4 =  pyAI.o commonAI.o
+SRCS4 = pyAI.c commonAI.o
 
 #
 # Variables to locate, make, and run the msub program
@@ -317,11 +317,11 @@ $(LIBCOMMON): $(OBJS0)
 	ar cql $@ $(OBJS0)
 
 make-client:
-	cd client && $(MAKE) -f ../Makefile.std libpyAI.so -shared \
-		"CC=$(CC)" -I/usr/include/python3.3 "CFLAGS=$(POOPFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+	cd client && $(MAKE) -f ../Makefile.std xpilot \
+		"CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
-libpyAI.so: $(OBJS1)
-	$(CC) $(LFLAGS) -o $@ -shared -I/usr/include/python3.3 $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+xpilot: $(OBJS1)
+	$(CC) $(LFLAGS) -o $@ $(OBJS1) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 make-server:
 	cd server && $(MAKE) -f ../Makefile.std xpilots \
@@ -339,12 +339,12 @@ xp-replay: $(OBJS3)
 
 #John Litborn: Summer 2014
 
-#make-python-api:
-#	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
-#                "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
+make-python-api:
+	cd client && $(MAKE) -f ../Makefile.std libpyAI.so \
+                "CC=$(CC)" "CFLAGS=$(CFLAGS)" "MLIB=$(MLIB)" "XLIB=$(XLIB)"
 
-#libpyAI.so: $(OBJS1) $(OBJS4)
-#        $(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
+libpyAI.so: $(OBJS1) $(OBJS4)
+	$(CC) $(LFLAGS) -o $@ $(OBJS1) $(OBJS4) ../common/$(LIBCOMMON) $(XLIB) $(MLIB)
 
 
 hppa:
@@ -822,6 +822,7 @@ player.o: player.c ../common/version.h ../common/config.h \
  ../common/keys.h ../common/bit.h ../common/draw.h ../common/item.h \
  click.h map.h ../common/rules.h ../common/list.h proto.h score.h \
  netserver.h saudio.h ../common/error.h objpos.h
+pyAI.o: pyAI.c commonAI.h
 robot.o: robot.c ../common/version.h ../common/config.h serverconst.h \
  ../common/const.h ../common/types.h global.h object.h \
  ../common/keys.h ../common/bit.h ../common/draw.h ../common/item.h \
