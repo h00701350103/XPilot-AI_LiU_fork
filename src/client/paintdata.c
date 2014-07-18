@@ -452,11 +452,15 @@ int Handle_start(long server_loops)
     phasingtime = -1;
     return 0;
 }
+#ifdef commonAI_H_INCLUDED
 extern void injectAI(); //Allow for inject -EGG
+#endif
 int Handle_end(long server_loops)
 {
 	//probably need to add an if statement here to disable inject when playing with normal client
+#ifdef commonAI_H_INCLUDED
     injectAI(); //Inject our code -EGG
+#endif
     end_loops = server_loops;
     snooping = self && (eyesId != self->id);
     if (headless < 1) // HEADLESS -EGG
