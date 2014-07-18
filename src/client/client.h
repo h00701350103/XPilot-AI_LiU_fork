@@ -379,7 +379,7 @@ extern int num_others;
 extern other_t *Others;
 extern int num_playing_teams;
 //added for headless
-extern int headless;
+extern int headless = 0;
 //added so AI code can see -hatten
 extern fuelstation_t  *fuels;
 extern int            num_fuels;
