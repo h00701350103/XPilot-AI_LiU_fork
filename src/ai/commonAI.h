@@ -1,5 +1,22 @@
 #ifndef commonAI_H_INCLUDED
 #define commonAI_H_INCLUDED
+
+#define INTTYPE 0
+#define DOUBLETYPE 1
+#define STRINGTYPE 2
+#define BOOLTYPE 3
+
+typedef struct {
+  char name[64]; //maxunshieldedplayerwallbounceangle is longest w/ 35ch
+  char stringValue[32];
+  int intValue;
+  double doubleValue;
+  int status;
+  int type;
+} options_struct;
+#define storedOptionCount 261
+options_struct storedOptions[storedOptionCount];
+
 int getLag(void);
 void turnLeft(void);
 void turnRight(void);

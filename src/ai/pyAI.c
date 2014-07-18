@@ -1,6 +1,7 @@
 #include <Python.h>
 #include "commonAI.h"
 
+static PyObject* py_loop = NULL;
 static PyObject* py_getLag(PyObject* pySelf, PyObject* args)
 {
   return Py_BuildValue("i", getLag());
@@ -120,15 +121,15 @@ static PyObject* py_setMaxTurnRad(PyObject* pySelf, PyObject* args)
 }
 static PyObject* py_getMaxTurnXdeg(PyObject* pySelf, PyObject* args)
 {
-  return Py_BuildValue("d", getMaxTurnXdeg);
+  return Py_BuildValue("d", getMaxTurnXdeg());
 }
 static PyObject* py_getMaxTurnDeg(PyObject* pySelf, PyObject* args)
 {
-  return Py_BuildValue("d", getMaxTurnDeg);
+  return Py_BuildValue("d", getMaxTurnDeg());
 }
 static PyObject* py_getMaxTurnRad(PyObject* pySelf, PyObject* args)
 {
-  return Py_BuildValue("d", getMaxTurnRad);
+  return Py_BuildValue("d", getMaxTurnRad());
 }
 static PyObject* py_thrust(PyObject* pySelf, PyObject* args) {
   thrust();
@@ -172,6 +173,10 @@ static PyObject* py_setTurnResistance(PyObject* pySelf, PyObject* args) {
 }
 static PyObject* py_fireShot(PyObject* pySelf, PyObject* args) {
   fireShot();
+  Py_RETURN_NONE;
+}
+static PyObject* py_fireMissile(PyObject* pySelf, PyObject* args) {
+  fireMissile();
   Py_RETURN_NONE;
 }
 static PyObject* py_fireTorpedo(PyObject* pySelf, PyObject* args) { 
@@ -289,7 +294,7 @@ static PyObject* py_loadLock(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if loadLock(lock) {
+  if (loadLock(lock)) {
       PyErr_SetString(PyExc_IndexError, "Index must be 1-4");
       return NULL;
   }
@@ -301,7 +306,7 @@ static PyObject* py_saveLock(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if saveLock(lock) {
+  if (saveLock(lock)) {
       PyErr_SetString(PyExc_IndexError, "Index must be 1-4");
       return NULL;
   }
@@ -431,7 +436,7 @@ static PyObject* py_quitAI(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_getMaxMsgs(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i", getMaxMsgs);
+  return Py_BuildValue("i", getMaxMsgs());
 }
 static PyObject* py_setMaxMsgs(PyObject* pySelf, PyObject* args) {
   int var;
@@ -518,13 +523,22 @@ static PyObject* py_lockHeadingRad(PyObject* pySelf, PyObject* args) {   //retur
   return Py_BuildValue("d",lockHeadingRad());
 }
 static PyObject* py_selfLockDist(PyObject* pySelf, PyObject* args) {      //returns the distance of the ship the player is locked onto -JNE
-  return Py_BuildValue("i",selfLockDist(); 
+  return Py_BuildValue("i",selfLockDist()); 
 }
 static PyObject* py_selfReload(PyObject* pySelf, PyObject* args) {    //returns the player's reload time remaining
   return Py_BuildValue("i",selfReload());
 }
+static PyObject* py_selfID(PyObject* pySelf, PyObject* args) { 
+  return Py_BuildValue("i",selfID());
+}
 static PyObject* py_selfAlive(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",selfAlive());
+}
+static PyObject* py_selfTeam(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",selfTeam());
+}
+static PyObject* py_selfLives(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",selfLives());
 }
 static PyObject* py_selfTrackingRad(PyObject* pySelf, PyObject* args) {  //returns the player's tracking in radians -JNE
   return Py_BuildValue("d",selfTrackingRad());
@@ -537,10 +551,34 @@ static PyObject* py_selfHeadingDeg(PyObject* pySelf, PyObject* args) {   //retur
   return Py_BuildValue("d",selfHeadingDeg());
 }
 static PyObject* py_selfHeadingRad(PyObject* pySelf, PyObject* args) {   //returns the player's heading in radians  -JNE
-  return Py_BuildValue("d",selfHeadingRad);
+  return Py_BuildValue("d",selfHeadingRad());
 }
 static PyObject* py_selfHeadingXdeg(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",selfHeading);
+  return Py_BuildValue("i",selfHeading());
+}
+static PyObject* py_hud(PyObject* pySelf, PyObject* args) {         //if the HUD is displaying a name, return it  -JNE
+  int i; 
+  if (!PyArg_ParseTuple(args, "i", &i)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("s",hud(i));
+}
+static PyObject* py_hudScore(PyObject* pySelf, PyObject* args) {        //if the HUD is displaying a score, return it -JNE
+  int i;
+  if (!PyArg_ParseTuple(args, "i", &i)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("s",hudScore(i));
+}
+static PyObject* py_hudTimeLeft(PyObject* pySelf, PyObject* args) {      //returns how much time the HUD will keep displaying a score for, in seconds -JNE
+  int i;
+  if (!PyArg_ParseTuple(args, "i", &i)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i",hudTimeLeft());
 }
 static PyObject* py_getTurnSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnSpeed());
@@ -551,6 +589,33 @@ static PyObject* py_getPower(PyObject* pySelf, PyObject* args) {
 static PyObject* py_getTurnResistance(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnResistance());
 }
+//Returns 1 if the player's shield is on, 0 if it is not, -1 if player is not alive. -EGG
+static PyObject* py_selfShield(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",selfShield());
+}
+//Returns the player's username (string). -EGG
+static PyObject* py_selfName(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("s",selfName());
+}
+//Returns the player's score (double). -EGG
+static PyObject* py_selfScore(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("d",selfScore());
+}
+static PyObject* py_selfItem(PyObject* pySelf, PyObject* args) {
+  int i, result;
+  if (!PyArg_ParseTuple(args, "i", &i)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  result = selfItem(i);
+  if (result = -1) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter, must be between 0 and 20");
+    return NULL;
+  }
+  else {
+    return Py_BuildValue("i",result);
+  }
+}
 static PyObject* py_selfFuel(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",selfFuel());
 }
@@ -560,6 +625,36 @@ static PyObject* py_selfFuelMax(PyObject* pySelf, PyObject* args) {
 static PyObject* py_selfFuelCurrent(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",selfFuelCurrent());
 }
+static PyObject* py_selfMass(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("d", selfMass());
+}
+static PyObject* py_closestRadarId(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i", closestRadarId());
+}
+static PyObject* py_radarX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i", radarX(id));
+}
+static PyObject* py_radarY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i", radarY(id));
+}
+static PyObject* py_radarType(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i", radarType(id));
+}
 static PyObject* py_radarCount(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",radarCount());
 }
@@ -568,9 +663,6 @@ static PyObject* py_radarHeight(PyObject* pySelf, PyObject* args) {
 }
 static PyObject* py_radarWidth(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",radarWidth());
-}
-static PyObject* py_itemCountScreen(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",itemCountScreen());
 }
 static PyObject* py_playerCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",playerCountServer());
@@ -583,6 +675,335 @@ static PyObject* py_pausedCountServer(PyObject* pySelf, PyObject* args) {
 }
 static PyObject* py_tankCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",tankCountServer());
+}
+static PyObject* py_shipCountScreen(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i", shipCountScreen());
+}
+static PyObject* py_enemyIdx(PyObject* pySelf, PyObject* args) {
+  int id, result;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  result = enemyIdx(id);
+  if (result = -1) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i", result);
+}
+static PyObject* py_enemyId(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i", enemyId(idx));
+}
+static PyObject* py_enemyX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyX(idx));
+}
+static PyObject* py_enemyY(PyObject* pySelf, PyObject* args) {    //returns y coordinate of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyY(idx));
+}
+static PyObject* py_enemyDistance(PyObject* pySelf, PyObject* args) { //returns the distance of a ship with a particular index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyDistance(idx));
+}
+static PyObject* py_enemyVelX(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemVelX(idx));
+}
+static PyObject* py_enemyVelY(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyVelY(idx));
+}
+static PyObject* py_enemySpeed(PyObject* pySelf, PyObject* args) {  //returns velocity of a ship with a particular index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemySpeed(idx));
+}
+static PyObject* py_enemyTrackingRad(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyTrackingRad(idx));
+}
+static PyObject* py_enemyTrackingDeg(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyTrackingDeg(idx));
+}
+static PyObject* py_enemyHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyHeadingXdeg(idx));
+}
+static PyObject* py_enemyHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns heading in degrees of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyHeadingDeg(idx));
+}
+static PyObject* py_enemyHeadingRad(PyObject* pySelf, PyObject* args) {   //returns heading in radians of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyHeadingRad(idx));
+}
+static PyObject* py_enemyShield(PyObject* pySelf, PyObject* args) {   //returns shield status of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyShield(idx));
+}
+static PyObject* py_enemyLives(PyObject* pySelf, PyObject* args) {    //returns lives of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyLives(idx));
+}
+static PyObject* py_enemyTeam(PyObject* pySelf, PyObject* args) { //returns team of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",enemyTeam(idx));
+}
+static PyObject* py_enemyName(PyObject* pySelf, PyObject* args) {   //returns name of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("s",enemyName(idx));
+}
+static PyObject* py_enemyScore(PyObject* pySelf, PyObject* args) {    //returns score of enemy at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (enemyIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",enemyScore(idx));
+}
+static PyObject* py_xdegToDeg(PyObject* pySelf, PyObject* args) {
+  double xdeg;
+  if (!PyArg_ParseTuple(args, "d", &xdeg)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_xdegToDeg(xdeg));
+}
+static PyObject* py_xdegToRad(PyObject* pySelf, PyObject* args) {
+  double xdeg;
+  if (!PyArg_ParseTuple(args, "d", &xdeg)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_xdegToRad(xdeg));
+}
+static PyObject* py_degToXdeg(PyObject* pySelf, PyObject* args) {
+  double deg;
+  if (!PyArg_ParseTuple(args, "d", &deg)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_degToXdeg(deg));
+}
+static PyObject* py_degToRad(PyObject* pySelf, PyObject* args) {
+  double deg;
+  if (!PyArg_ParseTuple(args, "d", &deg)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_degToRad(deg));
+}
+static PyObject* py_radToXdeg(PyObject* pySelf, PyObject* args) {
+  double rad;
+  if (!PyArg_ParseTuple(args, "d", &rad)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_radToXdeg(rad));
+}
+//Converts radians (double) to degrees (double). -EGG -hatten
+static PyObject* py_radToDeg(PyObject* pySelf, PyObject* args) {
+  double rad;
+  if (!PyArg_ParseTuple(args, "d", &rad)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",AI_radToDeg(rad));
+}
+static PyObject* py_angleDiffXdeg(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleDiffXdeg(angle1, angle2));
+}
+static PyObject* py_angleDiffDeg(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleDiffDeg(angle1, angle2));
+}
+static PyObject* py_angleDiffRad(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleDiffRad(angle1, angle2));
+}
+static PyObject* py_angleAddXdeg(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleAddXdeg(angle1, angle2));
+}
+static PyObject* py_angleAddDeg(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleAddDeg(angle1, angle2));
+}
+static PyObject* py_angleAddRad(PyObject* pySelf, PyObject* args) {
+  double angle1, angle2;
+  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",angleAddRad(angle1, angle2));
+}
+static PyObject* py_wallFeelerDeg(PyObject* pySelf, PyObject* args) { //removed flags -CJG
+  double dist, angle;
+  if (!PyArg_ParseTuple(args, "dd", &dist, &angle)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",wallFeelerDeg(dist, angle));
+}
+static PyObject* py_wallFeelerRad(PyObject* pySelf, PyObject* args) { //removed flags -CJG
+  double dist, angle;
+  if (!PyArg_ParseTuple(args, "dd", &dist, &angle)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("d",wallFeelerRad(dist, angle));
 }
 static PyObject* py_blockSize(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",blockSize());
@@ -599,51 +1020,1321 @@ static PyObject* py_mapWidthPixels(PyObject* pySelf, PyObject* args) {
 static PyObject* py_mapHeightPixels(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mapHeightPixels());
 }
+static PyObject* py_mapData(PyObject* pySelf, PyObject* args) {
+  int x,y;
+  if (!PyArg_ParseTuple(args, "ii", &x, &y)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  return Py_BuildValue("i",mapData(x, y));
+}
+static PyObject* py_getOption(PyObject* pySelf, PyObject* args) {
+  char *name[64];
+  int result, i;
+  if (!PyArg_ParseTuple(args, "s", &name)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  //convert to lowercase -hatten
+  for (i=0; name[0][i]; i++) {
+    name[0][i] = tolower(name[0][i]);
+  }
+  result = getOption(*name);
+  switch(result) {
+    case -5:
+      return Py_BuildValue("s", "queued");
+    case -4:
+      PyErr_SetString(PyExc_TypeError, "Option unavailable");
+      return NULL;
+    case -3:
+      PyErr_SetString(PyExc_TypeError, "unknown status");
+      return NULL;
+    case -2:
+      PyErr_SetString(PyExc_TypeError, "option doesn't exist, or not supported");
+      return NULL;
+    case -1:
+      PyErr_SetString(PyExc_TypeError, "generic error");
+      return NULL;
+    default:
+      //TODO: remake so storedOptions doesn't have to be global
+      switch (storedOptions[result].type) {
+        case INTTYPE:
+        case BOOLTYPE:
+          return Py_BuildValue("i", storedOptions[result].intValue);
+        case DOUBLETYPE:
+          return Py_BuildValue("d", storedOptions[result].doubleValue);
+        case STRINGTYPE:
+          return Py_BuildValue("s", storedOptions[result].stringValue);
+        default:
+          PyErr_SetString(PyExc_TypeError, "unknown type");
+          return NULL;
+      }
+  }
+}
+static PyObject* py_wallBetween(PyObject* pySelf, PyObject* args) {
+  double x1, y1, x2, y2;
+  if (!PyArg_ParseTuple(args, "dddd", &x1, &y1, &x2, &y2)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  double result = wallBetween(x1, y1, x2, y2);
+  if (result == -1)
+    return Py_BuildValue("i",-1);
+  else
+    return Py_BuildValue("d", result);
+}
+static PyObject* py_shotCountScreen(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",shotCountScreen());
+}
+static PyObject* py_shotX(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotX(idx));
+}
+static PyObject* py_shotY(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotY(idx));
+}
+static PyObject* py_shotVelX(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotVelX(idx));
+}
+static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotVelY(idx));
+}
+static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotDist(idx));
+}
+static PyObject* py_shotAge(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotAge(idx));
+}
+static PyObject* py_shotSpeed(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotSpeed(idx));
+}
+static PyObject* py_shotTrackingRad(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotTrackingRad(idx));
+}
+static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotTrackingDeg(idx));
+}
+static PyObject* py_shotAlert(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotAlert(idx));
+}
+static PyObject* py_asteroidCountScreen(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",asteroidCountScreen());
+}
+static PyObject* py_asteroidX(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidX(idx));
+}
+static PyObject* py_asteroidY(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidY(idx));
+}
+static PyObject* py_asteroidVelX(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidVelX(idx));
+}
+static PyObject* py_asteroidVelY(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidVelY(idx));
+}
+static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidDist(idx));
+}
+static PyObject* py_asteroidAge(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidAge(idx));
+}
+static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidSpeed(idx));
+}
+static PyObject* py_asteroidType(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidType(idx));
+}
+static PyObject* py_asteroidSize(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidSize(idx));
+}
+static PyObject* py_asteroidTrackingRad(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidTrackingRad(idx));
+}
+static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidTrackingDeg(idx));
+}
+static PyObject* py_asteroidAlert(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidAlert(idx));
+}
+static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
+    return NULL;
+  }
+  if (asteroidIdCheck(idx) == 2) {
+    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
+    return NULL;
+  }
+  return Py_BuildValue("i",asteroidRotation(idx));
+}
+
 static PyObject* py_phasingTime(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",phasingTime());
 }
 static PyObject* py_nextCheckPoint(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",getNextCheckPoint());
 }
+static PyObject* py_checkpointX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (checkpointIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i", checkpointX(id));
+}
+static PyObject* py_checkpointY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (checkpointIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i", checkpointY(id));
+}
+static PyObject* py_checkpointBlockX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (checkpointIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i", checkpointBlockX(id));
+}
+static PyObject* py_checkpointBlockY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (checkpointIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i", checkpointBlockY(id));
+}
+static PyObject* py_connectorCountScreen(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",connectorCountScreen());
+}
+static PyObject* py_connectorX0(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (connectorIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",connectorX0(id));
+}
+static PyObject* py_connectorY0(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (connectorIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",connectorY0(id));
+}
+static PyObject* py_connectorX1(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (connectorIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",connectorX1(id));
+}
+static PyObject* py_connectorY1(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (connectorIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",connectorY1(id));
+}
+static PyObject* py_connectorTractor(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (connectorIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",connectorTractor(id));
+}
 static PyObject* py_missileCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileCountScreen());
+}
+static PyObject* py_missileX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileX(id));
+}
+static PyObject* py_missileY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileY(id));
+}
+static PyObject* py_missileLen(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileLen(id));
+}
+static PyObject* py_missileHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileHeadingXdeg(id));
+}
+static PyObject* py_missileHeadingDeg(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileHeadingDeg(id));
+}
+static PyObject* py_missileHeadingRad(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (missileIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",missileHeadingRad(id));
 }
 static PyObject* py_laserCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserCountScreen());
 }
+static PyObject* py_laserX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserX(id));
+}
+static PyObject* py_laserY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserY(id));
+}
+static PyObject* py_laserLen(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserLen(id));
+}
+static PyObject* py_laserHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserHeadingXdeg(id));
+}
+static PyObject* py_laserHeadingDeg(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserHeadingDeg(id));
+}
+static PyObject* py_laserHeadingRad(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (laserIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",laserHeadingRad(id));
+}
 static PyObject* py_ballCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ballCountScreen());
+}
+static PyObject* py_ballX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (ballIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",ballX(id));
+}
+static PyObject* py_ballY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (ballIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",ballY(id));
+}
+static PyObject* py_ballId(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (ballIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",ballId(id));
 }
 static PyObject* py_mineCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mineCountScreen());
 }
+static PyObject* py_mineX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (mineIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",mineX(id));
+}
+static PyObject* py_mineY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (mineIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",mineY(id));
+}
+static PyObject* py_mineFriendly(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (mineIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",mineFriendly(id));
+}
+static PyObject* py_mineId(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (mineIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",mineId(id));
+}
 static PyObject* py_wormholeCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",wormholeCountScreen());
+}
+static PyObject* py_wormholeX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (wormholeIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",wormholeX(id));
+}
+static PyObject* py_wormholeY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (wormholeIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",wormholeY(id));
 }
 static PyObject* py_ecmCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ecmCountScreen());
 }
+static PyObject* py_ecmX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (ecmIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",ecmX(id));
+}
+static PyObject* py_ecmY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (ecmIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",ecmY(id));
+}
 static PyObject* py_timeLeftSec(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",timeLeftSec());
 }
-static PyObject* py_fuelStationCount(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",fuelStationCount());
+static PyObject* py_fuelstationCount(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",fuelstationCount());
+}
+static PyObject* py_fuelstationX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationX(id));
+}
+static PyObject* py_fuelstationY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationY(id));
+}
+static PyObject* py_fuelstationBlockX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationBlockX(id));
+}
+static PyObject* py_fuelstationBlockY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationBlockY(id));
+}
+static PyObject* py_fuelstationFuel(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationFuel(id));
+}
+static PyObject* py_fuelstationTeam(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  if (fuelstationIdCheck(id) == 2) {
+    PyErr_SetString(PyExc_IndexError, "team play not enabled");
+    return NULL;
+  }
+  return Py_BuildValue("i",fuelstationTeam(id));
 }
 static PyObject* py_cannonCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonCountServer());
 }
+static PyObject* py_cannonX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonX(id));
+}
+static PyObject* py_cannonY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonY(id));
+}
+static PyObject* py_cannonBlockX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonBlockX(id));
+}
+static PyObject* py_cannonBlockY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonBlockY(id));
+}
+static PyObject* py_cannonAlive(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonAlive(id));
+}
+static PyObject* py_cannonTeam(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  if (cannonIdCheck(id) == 2) {
+    PyErr_SetString(PyExc_IndexError, "team play not enabled");
+    return NULL;
+  }
+  return Py_BuildValue("i",cannonTeam(id));
+}
 static PyObject* py_targetCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetCountServer());
+}
+static PyObject* py_targetX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetX(id));
+}
+static PyObject* py_targetY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetY(id));
+}
+static PyObject* py_targetBlockX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetBlockX(id));
+}
+static PyObject* py_targetBlockY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetBlockY(id));
+}
+static PyObject* py_targetDamage(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetDamage(id));
+}
+static PyObject* py_targetAlive(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetAlive(id));
+}
+static PyObject* py_targetTeam(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  if (targetIdCheck(id) == 2) {
+    PyErr_SetString(PyExc_IndexError, "team play not enabled");
+    return NULL;
+  }
+  return Py_BuildValue("i",targetTeam(id));
 }
 static PyObject* py_baseCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseCountServer());
 }
+static PyObject* py_baseX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseX(id));
+}
+static PyObject* py_baseY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseY(id));
+}
+static PyObject* py_baseBlockX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseBlockX(id));
+}
+static PyObject* py_baseBlockY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseBlockY(id));
+}
+static PyObject* py_baseId(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseId(id));
+}
+static PyObject* py_baseTeam(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "invalid value for index");
+    return NULL;
+  }
+  if (baseIdCheck(id) == 2) {
+    PyErr_SetString(PyExc_IndexError, "team play not enabled");
+    return NULL;
+  }
+  return Py_BuildValue("i",baseTeam(id));
+}
+static PyObject* py_itemCountScreen(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",itemCountScreen());
+}
+static PyObject* py_itemX(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemX(idx));
+}
+static PyObject* py_itemY(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemY(idx));
+}
+static PyObject* py_itemType(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemType(idx));
+}
+static PyObject* py_itemRandom(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemRandom(idx));
+}
+static PyObject* py_itemVelX(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemVelX(idx));
+}
+static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemVelY(idx));
+}
+static PyObject* py_itemAge(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemAge(idx));
+}
+static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemDist(idx));
+}
+static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemSpeed(idx));
+}
+static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemTrackingRad(idx));
+}
+static PyObject* py_itemTrackingDeg(PyObject* pySelf, PyObject* args) {
+  int idx, check;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  check = itemIdCheck(idx);
+  if (check = 1) {
+    PyErr_SetString(PyExc_IndexError, "No item with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",itemTrackingDeg(idx));
+}
+static PyObject* py_version(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("s",getAiVersion());
+}
+//THE L00PZ -EGG
+static PyObject* py_switchLoop(PyObject* pySelf, PyObject* args) {
+  PyObject *temp;
+  if (PyArg_ParseTuple(args, "O:set_callback", &temp)) {
+    if (!PyCallable_Check(temp)) {
+      PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+      return NULL;
+    }
+    Py_XINCREF(temp);         /* Add a reference to new callback */
+    Py_XDECREF(py_loop);  /* Dispose of previous callback */
+    py_loop = temp;       /* Remember new callback */
+  }
+  Py_RETURN_NONE;
+}
+void AI_loop() {
+  if (PyCallable_Check(py_loop)) PyObject_CallObject(py_loop,NULL);
+}
+
+//END L00PZ -EGG
 static PyObject* py_headlessMode(PyObject* pySelf, PyObject* args) {
   headlessMode();
   Py_RETURN_NONE;
 }
-static PyObject* py_version(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("s",getAiVersion());
+//Inject our loop -EGG
+void injectAI() { 
+  commonInject();
+  AI_loop();
+}
+//END inject -EGG
+//Oh glorious py_main(), with the regular main(), you just start the Python shell. -.-; -EGG
+static PyObject* py_start(PyObject* pySelf, PyObject* args) {
+  //Parse python arguments
+  int i;
+  PyObject* listObj = PyList_New(0);
+  PyObject* strObj;
+  PyObject* temp;
+  if (!PyArg_ParseTuple(args, "O|O", &temp, &listObj))
+    return Py_BuildValue("s","INVALID ARGUMENTS!\n");
+  int argc = PyList_Size(listObj)+1;
+  char* argv[argc];
+  argv[0] = "xpilot-ng-x11";
+  for (i=0; i<argc-1; i++) {
+    strObj = PyList_GetItem(listObj, i);
+    strObj = PyUnicode_AsEncodedString(strObj,"utf-8","strict");
+    argv[i+1] = PyBytes_AS_STRING(strObj);
+  }
+  //Set AI loop
+  args = Py_BuildValue("(O)",temp);
+  py_switchLoop(pySelf, args);
+  return Py_BuildValue("i",commonStart(argc,argv));
 }
 //Python/C method definitions -EGG
 static PyMethodDef libpyAI_methods[] = {
@@ -887,10 +2578,10 @@ static PyMethodDef libpyAI_methods[] = {
     //beta functions~~~
     {"phasingTime",py_phasingTime,METH_NOARGS,"Returns the time left on the current phasing item."}, //TODO
     {"nextCheckPoint",py_nextCheckPoint,METH_NOARGS,"Returns the index of the next checkpoint"},
-    {"checkPointX",py_checkPointX,METH_VARARGS,"Returns the x coordinate of the specified checkpoint"}, //TODO: Use mapdata to return -1 if the checkPoint doesn't exist.
-    {"checkPointY",py_checkPointY,METH_VARARGS,"Returns the y coordinate of the specified checkpoint"},
-    {"checkPointBlockX",py_checkPointBlockX,METH_VARARGS,"Returns the x block of the specified checkpoint"},
-    {"checkPointBlockY",py_checkPointBlockY,METH_VARARGS,"Returns the y block of the specified checkpoint"},
+    {"checkpointX",py_checkpointX,METH_VARARGS,"Returns the x coordinate of the specified checkpoint"}, //TODO: Use mapdata to return -1 if the checkpoint doesn't exist.
+    {"checkpointY",py_checkpointY,METH_VARARGS,"Returns the y coordinate of the specified checkpoint"},
+    {"checkpointBlockX",py_checkpointBlockX,METH_VARARGS,"Returns the x block of the specified checkpoint"},
+    {"checkpointBlockY",py_checkpointBlockY,METH_VARARGS,"Returns the y block of the specified checkpoint"},
     {"ballCountScreen",py_ballCountScreen,METH_NOARGS,"Returns the number of balls on the screen"},
     {"ballX",py_ballX,METH_VARARGS,"Returns the x coordinate of the specified ball"},
     {"ballY",py_ballY,METH_VARARGS,"Returns the x coordinate of the specified ball"},
@@ -914,6 +2605,8 @@ static PyMethodDef libpyAI_methods[] = {
     {"laserX",py_laserX,METH_VARARGS,"Returns the x coordinate of the specified laser"},
     {"laserY",py_laserY,METH_VARARGS,"Returns the y coordinate of the specified laser"},
     {"laserHeadingXdeg",py_laserHeadingXdeg,METH_VARARGS,"Returns the direction of the specified laser"},
+    {"laserHeadingDeg",py_laserHeadingDeg,METH_VARARGS,"Returns the direction of the specified laser"},
+    {"laserHeadingRad",py_laserHeadingRad,METH_VARARGS,"Returns the direction of the specified laser"},
     {"laserLen",py_laserLen,METH_VARARGS,"Returns the length of the specified laser"}, //TODO: Interesting?
 
     {"mineCountScreen",py_mineCountScreen,METH_NOARGS,"Returns the number of mines on the screen"},
@@ -928,13 +2621,13 @@ static PyMethodDef libpyAI_methods[] = {
     {"ecmX",py_ecmX,METH_VARARGS,"Returns the x coordinate of the specified ECM"},
     {"ecmY",py_ecmY,METH_VARARGS,"Returns the y coordinate of the specified ECM"},
     {"timeLeftSec",py_timeLeftSec,METH_NOARGS,"Returns the time left in seconds, if gameduration is set."},
-    {"fuelStationCount",py_fuelStationCount,METH_NOARGS,"Returns the number of fuelstations on the server"}, //TODO: Write wrapper so we only handle the stations on screen -hatten
-    {"fuelStationX",py_fuelStationX,METH_VARARGS,"Returns the x coordinate of the specified fuelstation"},
-    {"fuelStationY",py_fuelStationY,METH_VARARGS,"Returns the y coordinate of the specified fuelstation"},
-    {"fuelStationBlockX",py_fuelStationBlockX,METH_VARARGS,"Returns the x coordinate of the specified fuelstation"},
-    {"fuelStationBlockY",py_fuelStationBlockY,METH_VARARGS,"Returns the y coordinate of the specified fuelstation"},
-    {"fuelStationFuel",py_fuelStationFuel,METH_VARARGS,"Returns the amount of fuel of the specified fuelstation"}, //updated when on screen, IIRC
-    {"fuelStationTeam",py_fuelStationTeam,METH_VARARGS,"Returns which team the fuelstation belongs to"},
+    {"fuelstationCount",py_fuelstationCount,METH_NOARGS,"Returns the number of fuelstations on the server"}, //TODO: Write wrapper so we only handle the stations on screen -hatten
+    {"fuelstationX",py_fuelstationX,METH_VARARGS,"Returns the x coordinate of the specified fuelstation"},
+    {"fuelstationY",py_fuelstationY,METH_VARARGS,"Returns the y coordinate of the specified fuelstation"},
+    {"fuelstationBlockX",py_fuelstationBlockX,METH_VARARGS,"Returns the x coordinate of the specified fuelstation"},
+    {"fuelstationBlockY",py_fuelstationBlockY,METH_VARARGS,"Returns the y coordinate of the specified fuelstation"},
+    {"fuelstationFuel",py_fuelstationFuel,METH_VARARGS,"Returns the amount of fuel of the specified fuelstation"}, //updated when on screen, IIRC
+    {"fuelstationTeam",py_fuelstationTeam,METH_VARARGS,"Returns which team the fuelstation belongs to"},
     {"cannonCountServer",py_cannonCountServer,METH_NOARGS,"Returns the number of cannons on the server"},
     {"cannonX",py_cannonX,METH_VARARGS,"Returns the x coordinate of the specified cannon"},
     {"cannonY",py_cannonY,METH_VARARGS,"Returns the y coordinate of the specified cannon"},
