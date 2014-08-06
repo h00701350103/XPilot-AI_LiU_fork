@@ -102,11 +102,11 @@ INCLUDES = -I/usr/include/python3.3 $(AUDIOINC) -I$(COMMON) -I../../lib/
 
 # keep this variable consistent with its counterpart in ../Makefile.std
 SRCS = \
-	../client/paintdata.c ../client.c pyAI.c commonAI.c
+	../client/paintdata.c ../client/client.c pyAI.c commonAI.c
 
 # keep this variable consistent with its counterpart in ../Makefile.std
 OBJS = \
-	../client/paintdata.o ../client.o pyAI.o commonAI.o
+	../client/paintdata.o ../client/client.o pyAI.o commonAI.o
 
 DEPLIBS = $(COMMON)libxpcommon.a $(DEPXLIB)
 
