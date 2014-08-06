@@ -2668,7 +2668,7 @@ int timeLeftSec(void) {
 }
 
 //fuelstation functions
-int fuelStationCount(void) {
+int fuelstationCount(void) {
   return num_fuels;
 }
 int fuelstationIdCheck(int id) {
