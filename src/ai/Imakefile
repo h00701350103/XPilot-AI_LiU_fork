@@ -100,13 +100,17 @@ DEFINES = \
        $(DEFS_OTHER) $(DEFS_DEBUG)
 INCLUDES = -I/usr/include/python3.3 $(AUDIOINC) -I$(COMMON) -I../../lib/
 
+	#../client/paintdata.c ../client/client.c ../client/paint.c ../client/xinit.c \
+	#../client/xpmread.c 
 # keep this variable consistent with its counterpart in ../Makefile.std
 SRCS = \
-	../client/paintdata.c ../client/client.c ../client/paint.c ../client/xinit.c pyAI.c commonAI.c
+	../client/about.o ../client/blockbitmaps.o ../client/caudio.o ../client/client.o ../client/colors.o ../client/configure.o ../client/datagram.o ../client/dbuff.o ../client/default.o ../client/gfx2d.o ../client/gfx3d.o ../client/guimap.o ../client/guiobjects.o ../client/join.o ../client/netclient.o ../client/paint.o ../client/paintdata.o ../client/painthud.o ../client/paintmap.o ../client/paintobjects.o ../client/paintradar.o ../client/query.o ../client/record.o ../client/sim.o ../client/syslimit.o ../client/talk.o ../client/talkmacros.o ../client/textinterface.o ../client/texture.o ../client/usleep.o ../client/welcome.o ../client/widget.o ../client/xeventhandlers.o ../client/xevent.o ../client/xinit.o ../client/xpilot.o ../client/xpmread.o \
+	pyAI.c commonAI.c
 
 # keep this variable consistent with its counterpart in ../Makefile.std
 OBJS = \
-	../client/paintdata.o ../client/client.o ../client/paint.o ../client/xinit.o pyAI.o commonAI.o
+	../client/paintdata.o ../client/client.o ../client/paint.o ../client/xinit.o \
+	pyAI.o commonAI.o
 
 DEPLIBS = $(COMMON)libxpcommon.a $(DEPXLIB)
 
