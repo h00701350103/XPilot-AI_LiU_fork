@@ -102,12 +102,34 @@ INCLUDES = -I/usr/include/python3.3 $(AUDIOINC) -I$(COMMON) -I../../lib/
 
 # keep this variable consistent with its counterpart in ../Makefile.std
 SRCS = \
-	../client/about.c ../client/blockbitmaps.c ../client/caudio.c ../client/client.c ../client/colors.c ../client/configure.c ../client/datagram.c ../client/dbuff.c ../client/default.c ../client/gfx2d.c ../client/gfx3d.c ../client/guimap.c ../client/guiobjects.c ../client/join.c ../client/netclient.c ../client/paint.c ../client/paintdata.c ../client/painthud.c ../client/paintmap.c ../client/paintobjects.c ../client/paintradar.c ../client/query.c ../client/record.c ../client/sim.c ../client/syslimit.c ../client/talk.c ../client/talkmacros.c ../client/textinterface.c ../client/texture.c ../client/usleep.c ../client/welcome.c ../client/widget.c ../client/xeventhandlers.c ../client/xevent.c ../client/xinit.c ../client/xpilot.c ../client/xpmread.c \
+	../client/about.c ../client/blockbitmaps.c ../client/caudio.c \
+	../client/client.c ../client/colors.c ../client/configure.c \
+	../client/datagram.c ../client/dbuff.c ../client/default.c \
+	../client/gfx2d.c ../client/gfx3d.c ../client/guimap.c \
+	../client/guiobjects.c ../client/join.c ../client/netclient.c \
+	../client/paint.c ../client/paintdata.c ../client/painthud.c \
+	../client/paintmap.c ../client/paintobjects.c ../client/paintradar.c \
+	../client/query.c ../client/record.c ../client/sim.c ../client/syslimit.c \
+	../client/talk.c ../client/talkmacros.c ../client/textinterface.c \
+	../client/texture.c ../client/usleep.c ../client/welcome.c \
+	../client/widget.c ../client/xeventhandlers.c ../client/xevent.c \
+	../client/xinit.c ../client/xpilot.c ../client/xpmread.c \
 	pyAI.c commonAI.c
 
 # keep this variable consistent with its counterpart in ../Makefile.std
 OBJS = \
-	../client/about.o ../client/blockbitmaps.o ../client/caudio.o ../client/client.o ../client/colors.o ../client/configure.o ../client/datagram.o ../client/dbuff.o ../client/default.o ../client/gfx2d.o ../client/gfx3d.o ../client/guimap.o ../client/guiobjects.o ../client/join.o ../client/netclient.o ../client/paint.o ../client/paintdata.o ../client/painthud.o ../client/paintmap.o ../client/paintobjects.o ../client/paintradar.o ../client/query.o ../client/record.o ../client/sim.o ../client/syslimit.o ../client/talk.o ../client/talkmacros.o ../client/textinterface.o ../client/texture.o ../client/usleep.o ../client/welcome.o ../client/widget.o ../client/xeventhandlers.o ../client/xevent.o ../client/xinit.o ../client/xpilot.o ../client/xpmread.o \
+	../client/about.o ../client/blockbitmaps.o ../client/caudio.o \
+	../client/client.o ../client/colors.o ../client/configure.o \
+	../client/datagram.o ../client/dbuff.o ../client/default.o \
+	../client/gfx2d.o ../client/gfx3d.o ../client/guimap.o \
+	../client/guiobjects.o ../client/join.o ../client/netclient.o \
+	../client/paint.o ../client/paintdata.o ../client/painthud.o \
+	../client/paintmap.o ../client/paintobjects.o ../client/paintradar.o \
+	../client/query.o ../client/record.o ../client/sim.o ../client/syslimit.o \
+	../client/talk.o ../client/talkmacros.o ../client/textinterface.o \
+	../client/texture.o ../client/usleep.o ../client/welcome.o \
+	../client/widget.o ../client/xeventhandlers.o ../client/xevent.o \
+	../client/xinit.o ../client/xpilot.o ../client/xpmread.o \
 	pyAI.o commonAI.o
 
 DEPLIBS = $(COMMON)libxpcommon.a $(DEPXLIB)
@@ -128,5 +150,5 @@ X_LIB = $(XLIBONLY)
 
 PROGRAMS = libpyAI.so
 
-ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) -shared $(MATHLIB) $(EXTRALIB))
+ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) -shared -I/usr/include/python3.2 -I/usr/include/python3.3 $(MATHLIB) $(EXTRALIB))
 CtagFiles(*.[ch] $(COMMON)*.[ch])

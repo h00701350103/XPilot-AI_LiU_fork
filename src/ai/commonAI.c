@@ -121,7 +121,7 @@ int maxTurn = 16; //Added for [s/g]etMaxTurn[/Deg/Rad]
 //Added for headless -EGG
 extern int headless;
 //Defined some stuff to avoid undefined warnings -EGG
-extern int main(int argc, char* argv[]);
+extern int ai_main(int argc, char* argv[], void (*injectFnPtr)(void));
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 score_object_t  score_objects[MAX_SCORE_OBJECTS];
 //Defined selfTrackingDeg & selfHeadingDeg to avoid needing pyAI.h -EGG
@@ -250,7 +250,7 @@ double AI_degToXdeg(double deg) {
   return deg * 64.0 / 180.0;
 }
 double AI_xdegToRad(double xdeg) {
-  return xdeg * PI_AI / 64.0;
+  return xdeg * 3.14 / 64.0;
 }
 double AI_xdegToDeg(double xdeg) {
   return xdeg * 180.0 / 64.0;
@@ -1435,26 +1435,26 @@ int enemyScore(int id) {
 //these functions don't belong in the API IMO, and they behave inconsistently
 double angleDiffXdeg(double angle1, double angle2) {
   double difference = angle2 - angle1;
-  while (difference > 128)
+  while (difference > 64)
     difference -= 128;
-  while (difference < 128)
+  while (difference < -64)
     difference += 128;
   return fabs(difference);
 }
 double angleDiffDeg(double angle1, double angle2) {
   double difference = angle2 - angle1;
-  while (difference > 360)
+  while (difference > 180)
     difference -= 360;
-  while (difference < 360)
+  while (difference < -180)
     difference += 360;
   return fabs(difference);
 }
 double angleDiffRad(double angle1, double angle2) {
   double difference = angle2 - angle1;
   while (difference > PI_AI)
-    difference -= PI_AI;
-  while (difference < PI_AI)
-    difference += PI_AI;
+    difference -= 2 * PI_AI;
+  while (difference < -PI_AI)
+    difference += 2 * PI_AI;
   return fabs(difference);
 }
 //Returns the result of adding two angles together. -EGG
@@ -2955,7 +2955,7 @@ void commonInject(void) {
 void headlessMode() {
   headless=1;
 }
-int commonStart(int argc, char* argv[]) {
+int commonStart(int argc, char* argv[], void (*injectFnPtr)(void)) {
   int j,k;
   ship_t theShip;
   theShip.x=-1;
@@ -2980,7 +2980,7 @@ int commonStart(int argc, char* argv[]) {
   //AIshot_toggle = 1;
   AI_alerttimemult = 5;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~\nAI INTERFACE INITIALIZED\n~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
-  return main(argc, argv);
+  return ai_main(argc, argv, injectFnPtr);
 }
 char* getAiVersion(void) {
   return "Xpilot-AI-fork 1.0 20140702";

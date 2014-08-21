@@ -1,6 +1,6 @@
 #include <Python.h>
 #include "commonAI.h"
-
+#define commonAI_H_INCLUDED
 static PyObject* py_loop = NULL;
 static PyObject* py_getLag(PyObject* pySelf, PyObject* args)
 {
@@ -578,7 +578,7 @@ static PyObject* py_hudTimeLeft(PyObject* pySelf, PyObject* args) {      //retur
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  return Py_BuildValue("i",hudTimeLeft());
+  return Py_BuildValue("i",hudTimeLeft(i));
 }
 static PyObject* py_getTurnSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnSpeed());
@@ -608,7 +608,7 @@ static PyObject* py_selfItem(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   result = selfItem(i);
-  if (result = -1) {
+  if (result == -1) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter, must be between 0 and 20");
     return NULL;
   }
@@ -746,7 +746,7 @@ static PyObject* py_enemyVelX(PyObject* pySelf, PyObject* args) { //returns velo
     PyErr_SetString(PyExc_TypeError, "No enemy with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemVelX(idx));
+  return Py_BuildValue("d",enemyVelX(idx));
 }
 static PyObject* py_enemyVelY(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
   int idx;
@@ -2146,7 +2146,7 @@ static PyObject* py_itemX(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2159,7 +2159,7 @@ static PyObject* py_itemY(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2172,7 +2172,7 @@ static PyObject* py_itemType(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2185,7 +2185,7 @@ static PyObject* py_itemRandom(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2198,7 +2198,7 @@ static PyObject* py_itemVelX(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2211,7 +2211,7 @@ static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2224,7 +2224,7 @@ static PyObject* py_itemAge(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2237,7 +2237,7 @@ static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2250,7 +2250,7 @@ static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2263,7 +2263,7 @@ static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2276,7 +2276,7 @@ static PyObject* py_itemTrackingDeg(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   check = itemIdCheck(idx);
-  if (check = 1) {
+  if (check == 1) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
@@ -2334,7 +2334,7 @@ static PyObject* py_start(PyObject* pySelf, PyObject* args) {
   //Set AI loop
   args = Py_BuildValue("(O)",temp);
   py_switchLoop(pySelf, args);
-  return Py_BuildValue("i",commonStart(argc,argv));
+  return Py_BuildValue("i",commonStart(argc,argv, &injectAI));
 }
 //Python/C method definitions -EGG
 static PyMethodDef libpyAI_methods[] = {
@@ -2512,10 +2512,10 @@ static PyMethodDef libpyAI_methods[] = {
     {"enemyScore",py_enemyScore,METH_VARARGS,"Returns the Specified Enemy's Score"},
 
     {"xdegToDeg",py_xdegToDeg,METH_VARARGS,"Converts xpilot degrees to degrees"},
-    {"xdegToRad",py_degToRad,METH_VARARGS,"Converts xpilot degrees to radians"},
-    {"degToXdeg",py_degToRad,METH_VARARGS,"Converts degrees to xpilot degrees"},
+    {"xdegToRad",py_xdegToRad,METH_VARARGS,"Converts xpilot degrees to radians"},
+    {"degToXdeg",py_degToXdeg,METH_VARARGS,"Converts degrees to xpilot degrees"},
     {"degToRad",py_degToRad,METH_VARARGS,"Converts degrees to radians"},
-    {"radToXdeg",py_radToDeg,METH_VARARGS,"Converts radians to xpilot degrees"},
+    {"radToXdeg",py_radToXdeg,METH_VARARGS,"Converts radians to xpilot degrees"},
     {"radToDeg",py_radToDeg,METH_VARARGS,"Converts radians to degrees"},
 
     {"angleDiffXdeg",py_angleDiffXdeg,METH_VARARGS,"Calculates Difference between Two Angles, in xpilot degrees"},

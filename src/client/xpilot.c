@@ -59,6 +59,8 @@
 #include "checknames.h"
 #include "commonproto.h"
 
+#include "inject.h"
+
 char xpilot_version[] = VERSION;
 
 #ifndef	lint
@@ -91,11 +93,20 @@ static void printfile(const char *filename)
     fclose(fp);
 }
 
+void (*injectAiPtr)(void);
 
+int ai_main(int argc, char *argv[], void (*injectFnPtr)(void)) {
+  injectAiPtr = injectFnPtr;
+  return cmain(argc, argv);
+}
+int main(int argc, char *argv[]) {
+  injectAiPtr = NULL;
+  return cmain(argc, argv);
+}
 /*
  * Oh glorious main(), without thee we cannot exist.
  */
-int main(int argc, char *argv[])
+int cmain(int argc, char *argv[])
 {
     int				result;
     int				auto_connect = false,
