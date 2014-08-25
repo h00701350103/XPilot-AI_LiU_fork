@@ -14,6 +14,11 @@ static PyObject* py_turnRight(PyObject* pySelf, PyObject*args) { //turns right a
   turnRight();
   Py_RETURN_NONE;
 }
+void turnResistanceCheck(void) {
+  if (getTurnResistance != 0) {
+    printf("WARNING: turnResistance != 0");
+  }
+}
 static PyObject* py_turnXdeg(PyObject* pySelf, PyObject* args)
 {
   double xdeg;
@@ -22,6 +27,7 @@ static PyObject* py_turnXdeg(PyObject* pySelf, PyObject* args)
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnXdeg(xdeg);
   Py_RETURN_NONE;
 }
@@ -33,6 +39,7 @@ static PyObject* py_turnToXdeg(PyObject* pySelf, PyObject* args)
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnToXdeg(xdeg);
   Py_RETURN_NONE;
 }
@@ -42,6 +49,7 @@ static PyObject* py_turnDeg(PyObject* pySelf, PyObject* args) { //turns based on
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnDeg(deg);
   Py_RETURN_NONE;
 }
@@ -53,6 +61,7 @@ static PyObject* py_turnToDeg(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnToDeg(deg);
   Py_RETURN_NONE;
 }
@@ -63,6 +72,7 @@ static PyObject* py_turnRad(PyObject* pySelf, PyObject* args)
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnRad(rad);
   Py_RETURN_NONE;
 }
@@ -74,6 +84,7 @@ static PyObject* py_turnToRad(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  turnResistanceCheck();
   turnToRad(rad);
   Py_RETURN_NONE;
 }
