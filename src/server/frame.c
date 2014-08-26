@@ -893,12 +893,14 @@ static void Frame_shots(int conn, int ind)
 	case OBJ_ITEM:
 	    {
 		int item_type = shot->info;
+                int random = 0;
 
 		if (BIT(shot->status, RANDOM_ITEM)) {
 		    item_type = Choose_random_item();
+                    random = 1;
 		}
 
-		Send_item(conn, x, y, item_type);
+		Send_item(conn, x, y, item_type, shot->vel, random);
 	    }
 	    break;
 

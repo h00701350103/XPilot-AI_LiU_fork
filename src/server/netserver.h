@@ -102,7 +102,7 @@ int Send_mine(int ind, int x, int y, int teammine, int id);
 int Send_target(int ind, int num, int dead_time, int damage);
 int Send_wormhole(int ind, int x, int y);
 int Send_audio(int ind, int type, int vol);
-int Send_item(int ind, int x, int y, int type);
+int Send_item(int ind, int x, int y, int type, vector vel, int random);
 int Send_paused(int ind, int x, int y, int count);
 int Send_ecm(int ind, int x, int y, int size);
 int Send_ship(int ind, int x, int y, int id, int dir, int shield, int cloak, int eshield, 

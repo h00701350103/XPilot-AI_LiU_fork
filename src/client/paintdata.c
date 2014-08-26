@@ -700,13 +700,15 @@ int Handle_mine(int x, int y, int teammine, int id)
     return 0;
 }
 
-int Handle_item(int x, int y, int type)
+int Handle_item(int x, int y, int type, vector vel, int random)
 {
     itemtype_t	t;
 
     t.x = x;
     t.y = y;
     t.type = type;
+    t.vel = vel;
+    t.random = random;
     STORE(itemtype_t, itemtype_ptr, num_itemtype, max_itemtype, t);
     return 0;
 }

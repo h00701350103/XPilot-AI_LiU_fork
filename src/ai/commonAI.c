@@ -124,13 +124,7 @@ extern int headless;
 extern int ai_main(int argc, char* argv[], void (*injectFnPtr)(void));
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 score_object_t  score_objects[MAX_SCORE_OBJECTS];
-//Defined selfTrackingDeg & selfHeadingDeg to avoid needing pyAI.h -EGG
-double selfTrackingDeg();
-double selfHeadingDeg();
-double selfTrackingRad();
-double selfHeadingRad();
-int selfHeading();
-double wallBetween();
+
 struct AI_msg_struct {
   char body[AI_MSGLEN];
   char from[32];
@@ -164,24 +158,6 @@ typedef struct {
 
 #define AIASTEROID_MAX 200 //TODO: figure out a good number
 
-struct AImissile_struct {
-  missile_t data;
-  object_t ai;
-} AImissile[2][AIASTEROID_MAX];
-int missileCount[2] = {0, 0};
-
-struct AIlaser_struct {
-  laser_t data;
-  object_t ai;
-} AIlaser[2][AIASTEROID_MAX];
-int laserCount[2] = {0, 0};
-
-struct AIball_struct {
-  ball_t data;
-  object_t ai;
-} AIball[2][AIASTEROID_MAX];
-int ballCount[2] = {0, 0};
-
 /*struct AIship_struct {
   ship_t data;
   object_t ai;
@@ -197,39 +173,7 @@ struct AIshot_struct {
 } AIshot[2][AISHOT_MAX];
 int shotCount[2] = {0, 0};
 
-struct AImine_struct {
-  mine_t data;
-  object_t ai;
-} AImine[2][AIASTEROID_MAX];
-int mineCount[2] = {0, 0};
-
-struct AIitem_struct {
-  itemtype_t data;
-  object_t ai;
-  int random;
-} AIitem[2][AIASTEROID_MAX];
-int itemCount[2] = {0, 0};
-
-struct AIradar_struct {
-  radar_t data;
-  object_t ai;
-} AIradar[2][AIASTEROID_MAX];
-//int radarCount[2] = {0, 0}; //why did I need this? /hatten
-
-struct AIdebris_struct {
-  debris_t data;
-  object_t ai;
-} AIdebris[2][AIASTEROID_MAX];
-int debrisCount[2] = {0, 0};
-
-struct AIwreckage_struct {
-  wreckage_t data;
-  object_t ai;
-} AIwreckage[2][AIASTEROID_MAX];
-int wreckageCount[2] = {0, 0};
-
 int AI_delaystart;
-int AIshot_toggle;
 int AI_alerttimemult;
 
 double AI_radToDeg(double rad) {
@@ -424,79 +368,6 @@ void AIshot_refresh() {
     shotCount[0] = 100;
   }
   AIshot_calcVel();
-}
-void AIitem_calcVel() {
-  int i, j, found, itemCountPreCopies;
-  double randomItemProb;
-  i = getOption("randomitemprob");
-  if (i >= 0 && storedOptions[i].status == SET) {
-    randomItemProb = storedOptions[i].doubleValue;
-  }
-  else
-    randomItemProb = 1;
-  //First find objects in the previus ticks we have data on
-  //and find objects in the current tick for them
-  for (j=0; j < itemCount[1]; j++) {
-    if (AIitem[1][j].ai.age > 0) {
-      found=0;
-      for (i=0; i < itemCount[0]; i++) {
-        if (randomItemProb == 0.0 && AIitem[0][i].data.type != AIitem[1][j].data.type) {
-          continue;
-        }
-        if (AIobject_calcVel(
-              AIitem[0][i].data.x, AIitem[1][j].data.x,
-              AIitem[0][i].data.y, AIitem[1][j].data.y,
-              -1, -1,
-              &AIitem[0][i].ai, &AIitem[1][j].ai) == 1) {
-          if (AIitem[0][i].data.type != AIitem[1][j].data.type)
-            AIitem[0][i].random = 1; //Somewhat sketchy
-          break;
-        }
-      }
-    }
-  }
-  //Then go through the remaining objects in the previous ticks
-  //and make copies of the remaining objects in the current tick
-  //and create objects with data from that.
-  //This will cover all cornercases, and give the user the option
-  //to play it safe and accord every possible object (age 1)
-  //or only those that are sure to exist (age >2)
-  for (j=0; j < itemCount[1]; j++) {
-    itemCountPreCopies = itemCount[0];
-    if (AIitem[1][j].ai.age == 0) {
-      found = 0;
-      for (i = 0; i < itemCountPreCopies && itemCount[0] < AIASTEROID_MAX; i++) {
-        if (AIitem[0][i].ai.age != 0)
-          continue;
-        AIitem[0][itemCount[0]] = AIitem[0][i];
-        found = AIobject_calcVel(
-            AIitem[0][itemCount[0]].data.x, AIitem[1][j].data.x,
-            AIitem[0][itemCount[0]].data.y, AIitem[1][j].data.y,
-            -1, -1,
-            &AIitem[0][itemCount[0]].ai, &AIitem[1][j].ai);
-        if (found==2 && itemCount[0] <= AIASTEROID_MAX)
-          itemCount[0]++;
-      }
-    }
-  }
-}
-void AIitem_refresh() {
-  int i;
-  itemCount[1] = itemCount[0];
-  if (num_itemtype > AIASTEROID_MAX) {
-    printf("ERROR: There are %d items on the screen, the API is unable to process more than %d!\n",
-        num_itemtype,AIASTEROID_MAX);
-    itemCount[0] = 100;
-  }
-  else
-    itemCount[0] = num_itemtype;
-  for (i=0; i < itemCount[1]; i++)
-    AIitem[1][i] = AIitem[0][i];
-  for (i=0; i < itemCount[0]; i++) {
-    AIitem[0][i].data = itemtype_ptr[i];
-    AIitem[0][i].ai.age = 0;
-  }
-  AIitem_calcVel();
 }
 
 //
@@ -1147,14 +1018,14 @@ int radarWidth(void) {
   return RadarWidth;
 }
 int itemCountScreen(void) {
-  return itemCount[0];
+  return num_itemtype;
 }
 //itemIdCheck is used twice, once in the language-specific file
 //to check whether to return an error message
 //and once in commonAI incase there's an error in the language-specific
 //file to avoid crashing
 int itemIdCheck(int id) {
-  if (id < 0 || id >= itemCount[0]) {
+  if (id < 0 || id >= itemCountScreen()) {
     return 1;
   }
   return 0;
@@ -1163,69 +1034,63 @@ int itemX(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].data.x;
+  return itemtype_ptr[id].x;
 }
 int itemY(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].data.y;
+  return itemtype_ptr[id].y;
 }
 int itemType(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].data.type;
+  return itemtype_ptr[id].type;
 }
 int itemRandom(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].random;
+  return itemtype_ptr[id].random;
 }
-int itemVelX(int id) {
+double itemVelX(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].ai.velX;
+  return itemtype_ptr[id].vel.x;
 }
-int itemVelY(int id) {
+double itemVelY(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].ai.velY;
+  return itemtype_ptr[id].vel.y;
 }
-int itemAge(int id) {
+double itemDist(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AIitem[0][id].ai.age;
-}
-int itemDist(int id) {
-  if (itemIdCheck(id) == 1) {
-    return -1;
-  }
-  int x = AI_wrap(pos.x, AIitem[0][id].data.x, Setup->width);
-  int y = AI_wrap(pos.y, AIitem[0][id].data.y, Setup->height);
+  int x = AI_wrap(pos.x, itemX(id), Setup->width);
+  int y = AI_wrap(pos.y, itemY(id), Setup->height);
   return AI_distance(pos.x, pos.y, x, y);
 }
-int itemSpeed(int id) {
+double itemSpeed(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  return AI_speed(AIitem[0][id].ai.velX, AIitem[0][id].ai.velY);
+  return AI_speed(itemVelX(id), itemVelY(id));
 }
-int itemTrackingRad(int id) {
+double itemTrackingRad(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  int velX = AIitem[0][id].ai.velX;
-  int velY = AIitem[0][id].ai.velY;
+  double velX = itemVelX(id);
+  double velY = itemVelY(id);
   if (velX == 0 && velY == 0)
     return 0;
   return atan2(velY, velX);
 }
-int itemTrackingDeg(int id) {
+double itemTrackingDeg(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
@@ -2313,7 +2178,7 @@ int shotVelX(int id) {
 int shotVelY(int id) {
   return AIshot[0][id].ai.velY;
 }
-int shotDist(int id) {
+double shotDist(int id) {
   int x = AI_wrap(pos.x, AIshot[0][id].x, Setup->width);
   int y = AI_wrap(pos.y, AIshot[0][id].y, Setup->height);
   return AI_distance(pos.x, pos.y, x, y);
@@ -2857,7 +2722,6 @@ void release_keys() {
 void commonInject(void) {
   prepareShips();
   AIshot_refresh(); //hatten
-  AIitem_refresh(); //hatten
   release_keys(); //added to make thrust etc toggles -hatten
   recieveOptions();
   if (AI_delaystart % 5 == 0)

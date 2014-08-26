@@ -219,7 +219,7 @@ int Handle_missile(int x, int y, int dir, int len);
 int Handle_ball(int x, int y, int id);
 int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
 int Handle_mine(int x, int y, int teammine, int id);
-int Handle_item(int x, int y, int type);
+int Handle_item(int x, int y, int type, vector vel, int random);
 int Handle_fastshot(int type, u_byte *p, int n);
 int Handle_debris(int type, u_byte *p, int n);
 int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation);

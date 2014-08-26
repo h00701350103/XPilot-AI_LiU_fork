@@ -1948,14 +1948,14 @@ int Send_wormhole(int ind, int x, int y)
     return Packet_printf(&Conn[ind].w, "%c%hd%hd", PKT_WORMHOLE, x, y);
 }
 
-int Send_item(int ind, int x, int y, int type)
+int Send_item(int ind, int x, int y, int type, vector vel, int random)
 {
     if (type >= ITEM_EMERGENCY_SHIELD) {
 	if (Conn[ind].version < 0x3200) {
 	    return 1;
 	}
     }
-    return Packet_printf(&Conn[ind].w, "%c%hd%hd%c", PKT_ITEM, x, y, type);
+    return Packet_printf(&Conn[ind].w, "%c%hd%hd%c%f%f%hd", PKT_ITEM, x, y, type, (float)vel.x, (float)vel.y, random);
 }
 
 int Send_paused(int ind, int x, int y, int count)

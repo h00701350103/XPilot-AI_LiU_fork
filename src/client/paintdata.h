@@ -89,6 +89,8 @@ typedef struct {
 
 typedef struct {
     short		x, y, type;
+    vector vel;
+    short random;
 } itemtype_t;
 
 typedef struct {

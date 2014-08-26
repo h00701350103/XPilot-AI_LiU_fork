@@ -1155,7 +1155,7 @@ static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  return Py_BuildValue("i",shotDist(idx));
+  return Py_BuildValue("d",shotDist(idx));
 }
 static PyObject* py_shotAge(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -2185,7 +2185,7 @@ static PyObject* py_itemVelX(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemVelX(idx));
+  return Py_BuildValue("d",itemVelX(idx));
 }
 static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
   int idx, check;
@@ -2198,20 +2198,7 @@ static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemVelY(idx));
-}
-static PyObject* py_itemAge(PyObject* pySelf, PyObject* args) {
-  int idx, check;
-  if (!PyArg_ParseTuple(args, "i", &idx)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  check = itemIdCheck(idx);
-  if (check == 1) {
-    PyErr_SetString(PyExc_IndexError, "No item with that id");
-    return NULL;
-  }
-  return Py_BuildValue("i",itemAge(idx));
+  return Py_BuildValue("d",itemVelY(idx));
 }
 static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
   int idx, check;
@@ -2224,7 +2211,7 @@ static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemDist(idx));
+  return Py_BuildValue("d",itemDist(idx));
 }
 static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
   int idx, check;
@@ -2237,7 +2224,7 @@ static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemSpeed(idx));
+  return Py_BuildValue("d",itemSpeed(idx));
 }
 static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
   int idx, check;
@@ -2250,7 +2237,7 @@ static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemTrackingRad(idx));
+  return Py_BuildValue("d",itemTrackingRad(idx));
 }
 static PyObject* py_itemTrackingDeg(PyObject* pySelf, PyObject* args) {
   int idx, check;
@@ -2263,7 +2250,7 @@ static PyObject* py_itemTrackingDeg(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No item with that id");
     return NULL;
   }
-  return Py_BuildValue("i",itemTrackingDeg(idx));
+  return Py_BuildValue("d",itemTrackingDeg(idx));
 }
 static PyObject* py_version(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("s",getAiVersion());
@@ -2550,7 +2537,6 @@ static PyMethodDef libpyAI_methods[] = {
     {"itemType",py_itemType,METH_VARARGS,"Returns the type of the specified item"},
     {"itemRandom",py_itemRandom,METH_VARARGS,"Returns whether the item is 'random'"},
     {"itemDist",py_itemDist,METH_VARARGS,"Returns the distance of an item from the ship"},
-    {"itemAge",py_itemAge,METH_VARARGS,"Returns the Distance of an item from the ship"},
     {"itemVelX",py_itemVelX,METH_VARARGS,"Returns the X velocity of an item"},
     {"itemVelY",py_itemVelY,METH_VARARGS,"Returns the Y velocity of an item"},
     {"itemSpeed",py_itemSpeed,METH_VARARGS,"Returns the Velocity of an item"},

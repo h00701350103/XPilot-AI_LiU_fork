@@ -1879,14 +1879,15 @@ int Receive_mine(void)
 int Receive_item(void)
 {
     int		n;
-    short	x, y;
+    short	x, y, random;
     u_byte	ch, type;
+    vector vel;
 
-    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &type)) <= 0) {
+    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%f%f%hd", &ch, &x, &y, &type, &(vel.x), &(vel.y), &random)) <= 0) {
 	return n;
     }
     if (type < NUM_ITEMS) {
-	if ((n = Handle_item(x, y, type)) == -1) {
+	if ((n = Handle_item(x, y, type, vel, random)) == -1) {
 	    return -1;
 	}
     }
