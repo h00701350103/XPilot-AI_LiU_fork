@@ -428,11 +428,13 @@ int Packet_printf(va_alist)
 			count,
 			failure = 0,
 			max_str_size;
+    int*                iptr;
     unsigned		uval;
     short		sval;
     unsigned short	usval;
     long		lval;
     unsigned long	ulval;
+    float               fval;
     char		*str,
 			*end,
 			*buf,
@@ -547,6 +549,22 @@ int Packet_printf(va_alist)
 		    break;
 		}
 		break;
+            case 'f': //added float support
+		if (buf + 4 >= end) {
+		    failure = PRINTF_SIZE;
+		    break;
+		}
+                //We search for the first double because floats are promoted
+                fval = va_arg(ap, double);
+                //Get an int pointer to point to the same data, because floats doesn't support shifts
+                iptr = (float*)&fval;
+
+                //Send it over the network, a byte at a time - copied from other case's
+                *buf++ = (char)(*iptr >> 24);
+                *buf++ = (char)(*iptr >> 16);
+                *buf++ = (char)(*iptr >> 8);
+                *buf++ = (char)*iptr;
+                break;
 	    case 'S':	/* Big strings */
 	    case 's':	/* Small strings */
 		max_str_size = (fmt[i] == 'S') ? MSG_LEN : MAX_CHARS;
@@ -624,6 +642,7 @@ int Packet_scanf(va_alist)
     unsigned long	*ulptr;
     char		*cptr,
 			*str;
+    float               *fptr;
     va_list		ap;
 #if !STDVA
     char		*fmt;
@@ -766,6 +785,40 @@ int Packet_scanf(va_alist)
 		    break;
 		}
 		break;
+            case 'f':
+                //added float handling
+                
+                //this part is copied from other types
+		if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4]) {
+		    if (BIT(sbuf->state, SOCKBUF_DGRAM | SOCKBUF_LOCK) != 0) {
+			failure = 3;
+			break;
+		    }
+		    if (Sockbuf_read(sbuf) == -1) {
+			failure = 2;
+			break;
+		    }
+		    if (&sbuf->buf[sbuf->len] < &sbuf->ptr[j + 4]) {
+			failure = 3;
+			break;
+		    }
+		}
+
+                //get a pointer to the variable we want to fill with data
+                fptr = va_arg(ap, float *);
+                {
+                  //Need to create a tmp int variable because floats doesn't support |=
+                  int tmp;
+
+                  tmp = sbuf->ptr[j++] << 24;
+                  tmp |= (sbuf->ptr[j++] & 0xFF) << 16;
+                  tmp |= (sbuf->ptr[j++] & 0xFF) << 8;
+                  tmp |= (sbuf->ptr[j++] & 0xFF);
+
+                  //"Cast" the int to a float
+                  *fptr = *((float*)&tmp);
+                }
+                break;
 	    case 'S':	/* Big strings */
 	    case 's':	/* Small strings */
 		max_str_size = (fmt[i] == 'S') ? MSG_LEN : MAX_CHARS;

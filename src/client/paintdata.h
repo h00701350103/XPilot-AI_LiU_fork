@@ -136,6 +136,7 @@ typedef struct {
 typedef struct {
     short		x, y;
     u_byte		type, size, rotation;
+    vector              vel;
 } asteroid_t;
 
 typedef struct {

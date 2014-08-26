@@ -769,7 +769,7 @@ int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
     return 0;
 }
 
-int Handle_asteroid(int x, int y, int type, int size, int rotation)
+int Handle_asteroid(int x, int y, int type, int size, int rotation, vector vel)
 {
     asteroid_t	t;
 
@@ -778,6 +778,7 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation)
     t.type = type;
     t.size = size;
     t.rotation = rotation;
+    t.vel = vel;
     STORE(asteroid_t, asteroid_ptr, num_asteroids, max_asteroids, t);
     return 0;
 }

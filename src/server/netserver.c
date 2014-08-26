@@ -1860,7 +1860,7 @@ int Send_wreckage(int ind, int x, int y, u_byte wrtype, u_byte size, u_byte rot)
 			 x, y, wrtype, size, rot);
 }
 
-int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot)
+int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot, vector vel)
 {
     u_byte	type_size;
 
@@ -1870,8 +1870,8 @@ int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot)
 
     type_size = ((type & 0x0F) << 4) | (size & 0x0F);
 
-    return Packet_printf(&Conn[ind].w, "%c%hd%hd%c%c", PKT_ASTEROID,
-		         x, y, type_size, rot);
+    return Packet_printf(&Conn[ind].w, "%c%hd%hd%c%c%f%f", PKT_ASTEROID,
+		         x, y, type_size, rot, (float)vel.x, (float)vel.y);
 }
 
 int Send_fastshot(int ind, int type, unsigned char *p, int n)

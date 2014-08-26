@@ -223,7 +223,7 @@ int Handle_item(int x, int y, int type);
 int Handle_fastshot(int type, u_byte *p, int n);
 int Handle_debris(int type, u_byte *p, int n);
 int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation);
-int Handle_asteroid(int x, int y, int type, int size, int rotation);
+int Handle_asteroid(int x, int y, int type, int size, int rotation, vector vel);
 int Handle_wormhole(int x, int y);
 int Handle_ecm(int x, int y, int size);
 int Handle_trans(int x1, int y1, int x2, int y2);

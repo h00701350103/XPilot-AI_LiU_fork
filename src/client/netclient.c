@@ -2046,16 +2046,17 @@ int Receive_asteroid(void)	/* since 4.4.0 */
     int			n;
     short		x, y;
     u_byte		ch, type_size, type, size, rot;
+    vector vel;
 
-    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y,
-			  &type_size, &rot)) <= 0) {
+    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c%f%f", &ch, &x, &y,
+			  &type_size, &rot, &(vel.x), &(vel.y))) <= 0) {
 	return n;
     }
 
     type = ((type_size >> 4) & 0x0F);
     size = (type_size & 0x0F);
 
-    if ((n = Handle_asteroid(x, y, type, size, rot)) == -1) {
+    if ((n = Handle_asteroid(x, y, type, size, rot, vel)) == -1) {
 	return -1;
     }
     return 1;

@@ -163,11 +163,6 @@ typedef struct {
 } object_t;
 
 #define AIASTEROID_MAX 200 //TODO: figure out a good number
-struct AIasteroid_struct {
-  asteroid_t data;
-  object_t ai;
-} AIasteroid[2][AIASTEROID_MAX];
-int asteroidCount[2] = {0, 0};
 
 struct AImissile_struct {
   missile_t data;
@@ -354,75 +349,6 @@ int AIobject_calcVel(int x, int x1, int y, int y1, int rotation, int rotation1,
   current->age    = past->age +1;
   AIobject_calcAlert(current, x, y);
   return 1;
-}
-void AIasteroid_calcVel() {
-  int i, j, found, asteroidCountPreCopies;
-  //First find objects in the previus ticks we have data on
-  //and find objects in the current tick for them
-  for (j=0; j < asteroidCount[1]; j++) {
-    if (AIasteroid[1][j].ai.age > 0) {
-      found=0;
-      for (i=0; i < asteroidCount[0]; i++) {
-        if (AIasteroid[0][i].data.size != AIasteroid[1][j].data.size)
-          continue;
-        if (AIasteroid[0][i].data.type != AIasteroid[1][j].data.type)
-          continue;
-        found = AIobject_calcVel(
-            AIasteroid[0][i].data.x, AIasteroid[1][j].data.x,
-            AIasteroid[0][i].data.y, AIasteroid[1][j].data.y,
-            AIasteroid[0][i].data.rotation, AIasteroid[1][j].data.rotation,
-            &AIasteroid[0][i].ai, &AIasteroid[1][j].ai);
-        if (found==1)
-          break;
-      }
-    }
-  }
-  //Then go through the remaining objects in the previous ticks
-  //and make copies of the remaining objects in the current tick
-  //and create objects with data from that.
-  //This will cover all cornercases, and give the user the option
-  //to play it safe and accord every possible object (age 1)
-  //or only those that are sure to exist (age >2)
-  for (j=0; j < asteroidCount[1]; j++) {
-    asteroidCountPreCopies = asteroidCount[0];
-    if (AIasteroid[1][j].ai.age == 0) {
-      found = 0;
-      for (i = 0; i < asteroidCountPreCopies && asteroidCount[0] < AIASTEROID_MAX; i++) {
-        if (AIasteroid[0][i].ai.age != 0)
-          continue;
-        if (AIasteroid[0][i].data.size != AIasteroid[1][j].data.size)
-          continue;
-        if (AIasteroid[0][i].data.type != AIasteroid[1][j].data.type)
-          continue;
-        AIasteroid[0][asteroidCount[0]] = AIasteroid[0][i];
-        found = AIobject_calcVel(
-            AIasteroid[0][asteroidCount[0]].data.x, AIasteroid[1][j].data.x,
-            AIasteroid[0][asteroidCount[0]].data.y, AIasteroid[1][j].data.y,
-            AIasteroid[0][asteroidCount[0]].data.rotation, AIasteroid[1][j].data.rotation,
-            &AIasteroid[0][asteroidCount[0]].ai, &AIasteroid[1][j].ai);
-        if (found==2 && asteroidCount[0] <= AIASTEROID_MAX)
-          asteroidCount[0]++;
-      }
-    }
-  }
-}
-void AIasteroid_refresh() {
-  int i;
-  asteroidCount[1] = asteroidCount[0];
-  if (num_asteroids > AIASTEROID_MAX) {
-    printf("ERROR: There are %d asteroids on the screen, the API is unable to process more than %d!\n",
-        num_asteroids,AIASTEROID_MAX);
-    asteroidCount[0] = 100;
-  }
-  else
-    asteroidCount[0] = num_asteroids;
-  for (i=0; i < asteroidCount[1]; i++)
-    AIasteroid[1][i] = AIasteroid[0][i];
-  for (i=0; i < asteroidCount[0]; i++) {
-    AIasteroid[0][i].data = asteroid_ptr[i];
-    AIasteroid[0][i].ai.age = 0;
-  }
-  AIasteroid_calcVel();
 }
 void AIshot_calcVel() {
   int i, j, found, shotCountPreCopies;
@@ -2413,58 +2339,52 @@ int shotAlert(int id) {
 }
 //asteroid functions -hatten
 int asteroidIdCheck(int id) {
-  if (id < 0 || id >= asteroidCount[0]) {
+  if (id < 0 || id >= asteroidCountScreen()) {
     return 1;
   }
   return 0;
 }
 int asteroidCountScreen() {
-  return asteroidCount[0];
+  return num_asteroids;
 }
 int asteroidX(int id) {
-  return AIasteroid[0][id].data.x;
+  return asteroid_ptr[id].x;
 }
 int asteroidY(int id) {
-  return AIasteroid[0][id].data.y;
+  return asteroid_ptr[id].y;
 }
 int asteroidType(int id) {
-  return AIasteroid[0][id].data.type;
+  return asteroid_ptr[id].type;
 }
 int asteroidSize(int id) {
-  return AIasteroid[0][id].data.size;
+  return asteroid_ptr[id].size;
 }
 int asteroidRotation(int id) {
-  return AIasteroid[0][id].data.rotation;
-}
-int asteroidAge(int id) {
-  return AIasteroid[0][id].ai.age;
+  return asteroid_ptr[id].rotation;
 }
 double asteroidVelX(int id) {
-  return AIasteroid[0][id].ai.velX;
+  return (double)asteroid_ptr[id].vel.x;
 }
 double asteroidVelY(int id) {
-  return AIasteroid[0][id].ai.velY;
+  return (double)asteroid_ptr[id].vel.y;
 }
 double asteroidDist(int id) {
-  int x = AI_wrap(pos.x, AIasteroid[0][id].data.x, Setup->width);
-  int y = AI_wrap(pos.y, AIasteroid[0][id].data.y, Setup->height);
+  int x = AI_wrap(pos.x, asteroidX(id), Setup->width);
+  int y = AI_wrap(pos.y, asteroidY(id), Setup->height);
   return AI_distance(pos.x, pos.y, x, y);
 }
 double asteroidSpeed(int id) {
-  return AI_speed(AIasteroid[0][id].ai.velX, AIasteroid[0][id].ai.velY);
+  return AI_speed(asteroidVelX(id), asteroidVelY(id));
 }
 double asteroidTrackingRad(int id) {
-  int velX = AIasteroid[0][id].ai.velX;
-  int velY = AIasteroid[0][id].ai.velY;
-  if (velX == 0 && velY == 0)
+  double velX = asteroidVelX(id);
+  double velY = asteroidVelY(id);
+  if (velX == 0 && velY == 0) //TODO: Needed?
     return 0;
   return atan2(velY, velX);
 }
 double asteroidTrackingDeg(int id) {
   return AI_radToDeg(asteroidTrackingRad(id));
-}
-int asteroidAlert(int id) {
-  return AIasteroid[0][id].ai.alert;
 }
 //moar functions
 int phasingTime(void) {
@@ -2936,7 +2856,6 @@ void release_keys() {
 //Inject our loop -EGG
 void commonInject(void) {
   prepareShips();
-  AIasteroid_refresh(); //hatten
   AIshot_refresh(); //hatten
   AIitem_refresh(); //hatten
   release_keys(); //added to make thrust etc toggles -hatten

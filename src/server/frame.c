@@ -810,7 +810,7 @@ static void Frame_shots(int conn, int ind)
 	case OBJ_ASTEROID: {
 		wireobject *ast = WIRE_PTR(shot);
 		Send_asteroid(conn, x, y,
-			      (u_byte)ast->info, ast->size, ast->rotation);
+			      (u_byte)ast->info, ast->size, ast->rotation, ast->vel);
 	    }
 	    break;
 

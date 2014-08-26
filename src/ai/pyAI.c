@@ -1266,7 +1266,7 @@ static PyObject* py_asteroidVelX(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  return Py_BuildValue("i",asteroidVelX(idx));
+  return Py_BuildValue("d",asteroidVelX(idx));
 }
 static PyObject* py_asteroidVelY(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1278,7 +1278,7 @@ static PyObject* py_asteroidVelY(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  return Py_BuildValue("i",asteroidVelY(idx));
+  return Py_BuildValue("d",asteroidVelY(idx));
 }
 static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1291,18 +1291,6 @@ static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   return Py_BuildValue("i",asteroidDist(idx));
-}
-static PyObject* py_asteroidAge(PyObject* pySelf, PyObject* args) {
-  int idx;
-  if (!PyArg_ParseTuple(args, "i", &idx)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  if (asteroidIdCheck(idx) == 1) {
-    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
-    return NULL;
-  }
-  return Py_BuildValue("i",asteroidAge(idx));
 }
 static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1371,22 +1359,6 @@ static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   return Py_BuildValue("i",asteroidTrackingDeg(idx));
-}
-static PyObject* py_asteroidAlert(PyObject* pySelf, PyObject* args) {
-  int idx;
-  if (!PyArg_ParseTuple(args, "i", &idx)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  if (asteroidIdCheck(idx) == 1) {
-    PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
-    return NULL;
-  }
-  if (asteroidIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",asteroidAlert(idx));
 }
 static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -2566,13 +2538,11 @@ static PyMethodDef libpyAI_methods[] = {
     {"asteroidSize",py_asteroidSize,METH_VARARGS,"Returns the size of the specified asteroid"},
     {"asteroidRotation",py_asteroidRotation,METH_VARARGS,"Returns the rotation of the specified asteroid"},
     {"asteroidDist",py_asteroidDist,METH_VARARGS,"Returns the distance of an asteroid from the ship"},
-    {"asteroidAge",py_asteroidAge,METH_VARARGS,"Returns the Distance of a asteroid from the ship"},
     {"asteroidVelX",py_asteroidVelX,METH_VARARGS,"Returns the X velocity of a asteroid"},
     {"asteroidVelY",py_asteroidVelY,METH_VARARGS,"Returns the Y velocity of a asteroid"},
     {"asteroidSpeed",py_asteroidSpeed,METH_VARARGS,"Returns the Velocity of a asteroid"},
     {"asteroidTrackingDeg",py_asteroidTrackingDeg,METH_VARARGS,"Returns the direction (degrees) of the Velocity of a asteroid"},
     {"asteroidTrackingRad",py_asteroidTrackingRad,METH_VARARGS,"Returns the direction (radians) of the Velocity of a asteroid"},
-    {"asteroidAlert",py_asteroidAlert,METH_VARARGS,"Returns a Danger Rating of a asteroid"},
     //Item tracking functions -hatten
     {"itemCountScreen",py_itemCountScreen,METH_NOARGS,"Returns the number of items on the screen"},
     {"itemX",py_itemX,METH_VARARGS,"Returns the X screen coordinate of the specified item"},

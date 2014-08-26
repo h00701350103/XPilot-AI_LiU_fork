@@ -94,7 +94,7 @@ int Send_phasingtime(int ind, int count, int max);
 int Send_rounddelay(int ind, int count, int max);
 int Send_debris(int ind, int type, unsigned char *p, int n);
 int Send_wreckage(int ind, int x, int y, u_byte wrtype, u_byte size, u_byte rot);
-int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot);
+int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot, vector vel);
 int Send_fastshot(int ind, int type, unsigned char *p, int n);
 int Send_missile(int ind, int x, int y, int len, int dir);
 int Send_ball(int ind, int x, int y, int id);
