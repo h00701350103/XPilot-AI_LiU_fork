@@ -1038,6 +1038,7 @@ static void Frame_ships(int conn, int ind)
 		      pl_i->pos.y,
 		      pl_i->id,
 		      pl_i->dir,
+                      pl_i->vel,
 		      BIT(pl_i->used, HAS_SHIELD) != 0,
 		      BIT(pl_i->used, HAS_CLOAKING_DEVICE) != 0,
 		      BIT(pl_i->used, HAS_EMERGENCY_SHIELD) != 0,

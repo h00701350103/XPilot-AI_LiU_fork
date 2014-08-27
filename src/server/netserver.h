@@ -105,7 +105,7 @@ int Send_audio(int ind, int type, int vol);
 int Send_item(int ind, int x, int y, int type, vector vel, int random);
 int Send_paused(int ind, int x, int y, int count);
 int Send_ecm(int ind, int x, int y, int size);
-int Send_ship(int ind, int x, int y, int id, int dir, int shield, int cloak, int eshield, 
+int Send_ship(int ind, int x, int y, int id, int dir, vector vel, int shield, int cloak, int eshield, 
 			  int phased, int deflector);
 int Send_refuel(int ind, int x0, int y0, int x1, int y1);
 int Send_connector(int ind, int x0, int y0, int x1, int y1, int tractor);

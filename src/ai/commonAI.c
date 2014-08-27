@@ -158,12 +158,6 @@ typedef struct {
 
 #define AIASTEROID_MAX 200 //TODO: figure out a good number
 
-/*struct AIship_struct {
-  ship_t data;
-  object_t ai;
-  } AIship[2][AIASTEROID_MAX];
-  int shipCount[2] = {0, 0};*/
-
 #define AISHOT_MAX    100 /*max number of shots */
 struct AIshot_struct {
   int x;
@@ -805,10 +799,10 @@ int selfX(void) {
 int selfY(void) {
   return pos.y;
 }
-int selfVelX(void) {
+double selfVelX(void) {
   return vel.x;
 }
-int selfVelY(void) {
+double selfVelY(void) {
   return vel.y;
 }
 double selfSpeed(void) {
@@ -1146,6 +1140,12 @@ int playerCountServer(void) {
 int otherCountServer(void) {
   return num_others;
 }
+int otherIdCheck(int id) {
+  if (id >= otherCountServer() || id < 0) {
+    return 1;
+  }
+  return 0;
+}
 int shipCountScreen(void) {
   return num_ship;
 }
@@ -1159,6 +1159,7 @@ int enemyIdx(int id) {
   return -1;
 }
 int enemyId(int idx) {
+  return ship_ptr[idx].id;
   if (idx <= num_ship) {
     return allShips[idx][0].ship.id;
   }
@@ -1174,31 +1175,37 @@ int enemyIdCheck(int id) {
   return 0;
 }
 int enemyX(int id) {
-  return allShips[id][0].ship.x;
+  return ship_ptr[id].x;
 }
 int enemyY(int id) {
-  return allShips[id][0].ship.y;
-}
-double enemyDistance(int id) {
-  return allShips[id][0].d;
+  return ship_ptr[id].y;
 }
 double enemyVelX(int id) {
-  return allShips[id][0].velX;
+  return ship_ptr[id].vel.x;
 }
 double enemyVelY(int id) {
-  return allShips[id][0].velY;
+  return ship_ptr[id].vel.y;
+}
+double enemyDistance(int id) {
+  int x = AI_wrap(pos.x, enemyX(id), Setup->width);
+  int y = AI_wrap(pos.y, enemyY(id), Setup->height);
+  return AI_distance(pos.x, pos.y, x, y);
 }
 double enemySpeed(int id) {
-  return allShips[id][0].vel;
+  return AI_speed(enemyVelX(id), enemyVelY(id));
 }
 double enemyTrackingRad(int id) {
-  return allShips[id][0].trackingRad;
+  double velX = enemyVelX(id);
+  double velY = enemyVelY(id);
+  if (velX == 0 && velY == 0) //TODO: Needed?
+    return 0;
+  return atan2(velY, velX);
 }
 double enemyTrackingDeg(int id) {
-  return allShips[id][0].trackingDeg;
+  return AI_radToDeg(enemyTrackingRad(id));
 }
 int enemyHeadingXdeg(int id) {
-  return allShips[id][0].ship.dir;
+  return ship_ptr[id].dir;
 }
 double enemyHeadingDeg(int id) {
   return AI_xdegToDeg(enemyHeadingXdeg(id));
@@ -1207,8 +1214,10 @@ double enemyHeadingRad(int id) {
   return AI_xdegToRad(enemyHeadingXdeg(id));
 }
 int enemyShield(int id) {
-  return allShips[id][0].ship.shield;
+  return ship_ptr[id].shield;
 }
+
+
 int enemyLives(int id) {
   return Others[id].life;
 }

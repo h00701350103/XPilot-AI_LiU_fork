@@ -204,7 +204,7 @@ typedef struct {
 
 
 extern ipos	pos;
-extern ipos	vel;
+extern vector	vel;
 extern ipos	world;
 extern ipos	realWorld;
 extern short	heading;

@@ -516,10 +516,10 @@ static PyObject* py_selfY(PyObject* pySelf, PyObject* args) {       //returns th
   return Py_BuildValue("i",selfY());
 }
 static PyObject* py_selfVelX(PyObject* pySelf, PyObject* args) {    //returns the player's x velocity
-  return Py_BuildValue("i",selfVelX());
+  return Py_BuildValue("d",selfVelX());
 }
 static PyObject* py_selfVelY(PyObject* pySelf, PyObject* args) {    //returns the player's y velocity
-  return Py_BuildValue("i",selfVelY());
+  return Py_BuildValue("d",selfVelY());
 }
 static PyObject* py_selfSpeed(PyObject* pySelf, PyObject* args) {   //returns speed of the player's ship
   return Py_BuildValue("d",selfSpeed());
@@ -885,7 +885,7 @@ static PyObject* py_enemyName(PyObject* pySelf, PyObject* args) {   //returns na
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
+  if (otherIdCheck(idx) != 0) {
     PyErr_SetString(PyExc_TypeError, "No enemy with that id");
     return NULL;
   }

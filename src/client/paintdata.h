@@ -79,6 +79,7 @@ typedef struct {
 
 typedef struct {
     short		x, y, id, dir;
+    vector              vel;
     u_byte		shield, cloak, eshield;
 	u_byte		phased, deflector;
 } ship_t;

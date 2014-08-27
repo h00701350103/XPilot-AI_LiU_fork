@@ -197,7 +197,7 @@ extern void	Init_scale_array(void);
 void Add_message(char *message);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
-int Handle_self(int x, int y, int vx, int vy, int dir,
+int Handle_self(int x, int y, vector newVel, int dir,
     float power, float turnspeed, float turnresistance,
     int lock_id, int lock_dist, int lock_dir,
     int nextCheckPoint, int autopilotLight,
@@ -217,7 +217,7 @@ int Handle_connector(int x0, int y0, int x1, int y1, int tractor);
 int Handle_laser(int color, int x, int y, int len, int dir);
 int Handle_missile(int x, int y, int dir, int len);
 int Handle_ball(int x, int y, int id);
-int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
+int Handle_ship(int x, int y, int id, int dir, vector vel, int shield, int cloak, int eshield, int phased, int deflector);
 int Handle_mine(int x, int y, int teammine, int id);
 int Handle_item(int x, int y, int type, vector vel, int random);
 int Handle_fastshot(int type, u_byte *p, int n);

@@ -478,7 +478,7 @@ int Handle_self_items(u_byte *newNumItems)
     return 0;
 }
 
-int Handle_self(int x, int y, int vx, int vy, int newHeading,
+int Handle_self(int x, int y, vector newVel, int newHeading,
 		float newPower, float newTurnspeed, float newTurnresistance,
 		int newLockId, int newLockDist, int newLockBearing,
 		int newNextCheckPoint, int newAutopilotLight,
@@ -487,8 +487,8 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
 {
     pos.x = x;
     pos.y = y;
-    vel.x = vx;
-    vel.y = vy;
+    vel.x = newVel.x;
+    vel.y = newVel.y;
     heading = newHeading;
     displayedPower = newPower;
     displayedTurnspeed = newTurnspeed;
@@ -654,7 +654,7 @@ int Handle_ball(int x, int y, int id)
     return 0;
 }
 
-int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, 
+int Handle_ship(int x, int y, int id, int dir, vector vel, int shield, int cloak, int eshield, 
 				int phased, int deflector)
 {
     ship_t	t;
@@ -663,6 +663,7 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshiel
     t.y = y;
     t.id = id;
     t.dir = dir;
+    t.vel = vel;
     t.shield = shield;
     t.cloak = cloak;
     t.eshield = eshield;

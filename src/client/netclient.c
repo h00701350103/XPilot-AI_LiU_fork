@@ -1611,20 +1611,25 @@ int Receive_self_items(void)
 int Receive_self(void)
 {
     int		n;
-    short	x, y, vx, vy, lockId, lockDist,
+    short	x, y, lockId, lockDist,
 		fuelSum, fuelMax;
     u_byte	ch, heading, power, turnspeed, turnresistance,
 		nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
     u_byte	num_items[NUM_ITEMS];
+    vector      vel;
 
     n = Packet_scanf(&rbuf,
 		     "%c"
-		     "%hd%hd%hd%hd%c"
+		     "%hd%hd"
+                     "%f%f"
+                     "%c"
 		     "%c%c%c"
 		     "%hd%hd%c%c"
 		     ,
 		     &ch,
-		     &x, &y, &vx, &vy, &heading,
+		     &x, &y,
+                     &(vel.x), &(vel.y),
+                     &heading,
 		     &power, &turnspeed, &turnresistance,
 		     &lockId, &lockDist, &lockDir, &nextCheckPoint);
     if (n <= 0) {
@@ -1729,7 +1734,7 @@ int Receive_self(void)
     Check_view_dimensions();
 
     Game_over_action(stat);
-    Handle_self(x, y, vx, vy, heading,
+    Handle_self(x, y, vel, heading,
 		(float) power,
 		(float) turnspeed,
 		(float) turnresistance / 255.0F,
@@ -1841,11 +1846,12 @@ int Receive_ship(void)
     int		n, shield, cloak, eshield, phased, deflector;
     short	x, y, id;
     u_byte	ch, dir, flags;
+    vector      vel;
 
     if ((n = Packet_scanf(&rbuf,
-			  "%c%hd%hd%hd" "%c%c",
+			  "%c%hd%hd%hd" "%c%f%f%c",
 			  &ch, &x, &y, &id,
-			  &dir, &flags)) <= 0) {
+			  &dir, &(vel.x), &(vel.y), &flags)) <= 0) {
 	return n;
     }
     shield = ((flags & 1) != 0);
@@ -1854,7 +1860,7 @@ int Receive_ship(void)
     phased = ((flags & 8) != 0);
     deflector = ((flags & 0x10) != 0);
 
-    if ((n = Handle_ship(x, y, id, dir, shield, cloak, eshield, phased, deflector)) == -1) {
+    if ((n = Handle_ship(x, y, id, dir, vel, shield, cloak, eshield, phased, deflector)) == -1) {
 	return -1;
     }
     return 1;

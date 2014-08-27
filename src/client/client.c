@@ -74,7 +74,7 @@ int			RadarHeight = 0;
 int			RadarWidth = 256;	/* must always be 256! */
 
 ipos	pos;
-ipos	vel;
+vector	vel;
 ipos	world;
 ipos	realWorld;
 short	heading;

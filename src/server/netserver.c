@@ -1424,7 +1424,9 @@ int Send_self(int ind,
     if (connp->version >= 0x4203) {
 	n = Packet_printf(&connp->w,
 			  "%c"
-			  "%hd%hd%hd%hd%c"
+			  "%hd%hd"
+                          "%f%f" //vel.x, vel.y
+                          "%c"
 			  "%c%c%c"
 			  "%hd%hd%c%c"
 			  "%c%hd%hd"
@@ -1433,7 +1435,7 @@ int Send_self(int ind,
 			  ,
 			  PKT_SELF,
 			  (int) (pl->pos.x + 0.5), (int) (pl->pos.y + 0.5),
-			  (int) pl->vel.x, (int) pl->vel.y,
+			  (float) pl->vel.x, (float) pl->vel.y,
 			  pl->dir,
 			  (int) (pl->power + 0.5),
 			  (int) (pl->turnspeed + 0.5),
@@ -1974,7 +1976,7 @@ int Send_trans(int ind, int x1, int y1, int x2, int y2)
 			 PKT_TRANS, x1, y1, x2, y2);
 }
 
-int Send_ship(int ind, int x, int y, int id, int dir,
+int Send_ship(int ind, int x, int y, int id, int dir, vector vel,
 	      int shield, int cloak, int emergency_shield, int phased, int deflector)
 {
     if (Conn[ind].version < 0x4300) {
@@ -1984,9 +1986,9 @@ int Send_ship(int ind, int x, int y, int id, int dir,
 	cloak = (cloak || phased);
     }
     return Packet_printf(&Conn[ind].w,
-			 "%c%hd%hd%hd" "%c" "%c",
+			 "%c%hd%hd%hd" "%c%f%f" "%c",
 			 PKT_SHIP, x, y, id,
-			 dir,
+			 dir, (float)vel.x, (float)vel.y,
 			 (shield != 0) 
 				| ((cloak != 0) << 1)
 			    | ((emergency_shield != 0) << 2)
