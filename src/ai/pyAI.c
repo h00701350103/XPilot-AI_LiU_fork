@@ -939,54 +939,6 @@ static PyObject* py_radToDeg(PyObject* pySelf, PyObject* args) {
   }
   return Py_BuildValue("d",AI_radToDeg(rad));
 }
-static PyObject* py_angleDiffXdeg(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleDiffXdeg(angle1, angle2));
-}
-static PyObject* py_angleDiffDeg(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleDiffDeg(angle1, angle2));
-}
-static PyObject* py_angleDiffRad(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleDiffRad(angle1, angle2));
-}
-static PyObject* py_angleAddXdeg(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleAddXdeg(angle1, angle2));
-}
-static PyObject* py_angleAddDeg(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleAddDeg(angle1, angle2));
-}
-static PyObject* py_angleAddRad(PyObject* pySelf, PyObject* args) {
-  double angle1, angle2;
-  if (!PyArg_ParseTuple(args, "dd", &angle1, &angle2)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  return Py_BuildValue("d",angleAddRad(angle1, angle2));
-}
 static PyObject* py_wallFeelerDeg(PyObject* pySelf, PyObject* args) { //removed flags -CJG
   double dist, angle;
   if (!PyArg_ParseTuple(args, "dd", &dist, &angle)){
@@ -2445,13 +2397,6 @@ static PyMethodDef libpyAI_methods[] = {
     {"degToRad",py_degToRad,METH_VARARGS,"Converts degrees to radians"},
     {"radToXdeg",py_radToXdeg,METH_VARARGS,"Converts radians to xpilot degrees"},
     {"radToDeg",py_radToDeg,METH_VARARGS,"Converts radians to degrees"},
-
-    {"angleDiffXdeg",py_angleDiffXdeg,METH_VARARGS,"Calculates Difference between Two Angles, in xpilot degrees"},
-    {"angleDiffDeg",py_angleDiffDeg,METH_VARARGS,"Calculates Difference between Two Angles, in degrees."},
-    {"angleDiffRad",py_angleDiffRad,METH_VARARGS,"Calculates Difference between Two Angles, in radians."},
-    {"angleAddXdeg",py_angleAddXdeg,METH_VARARGS,"Calculates the Addition of Two Angles, in xpilot degrees."},
-    {"angleAddDeg",py_angleAddDeg,METH_VARARGS,"Calculates the Addition of Two Angles, in degrees."},
-    {"angleAddRad",py_angleAddRad,METH_VARARGS,"Calculates the Addition of Two Angles, in radians."},
 
     {"wallFeelerDeg",py_wallFeelerDeg,METH_VARARGS,"Returns if there is a wall or not at the Specified Angle (degrees) within the Specified Distance of the ship"},
     {"wallFeelerRad",py_wallFeelerRad,METH_VARARGS,"Returns if there is a wall or not at the Specified Angle (radians) within the Specified Distance of the ship"},

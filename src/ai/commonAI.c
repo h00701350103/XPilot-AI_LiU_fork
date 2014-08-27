@@ -179,7 +179,11 @@ void wrapWhole(int x1, int y1, int* x2, int* y2, int xSize, int ySize, double* b
   *y2=yBest;
   return;
 }
-
+double AI_distToSelf(int x, int y) {
+  int x = AI_wrap(selfX(), x, Setup->width);
+  int y = AI_wrap(selfY(), y, Setup->height);
+  return AI_distance(selfX(), selfY(), x, y);
+}
 //Reload tracker
 int reload = 0;
 //From xpilot-ng's event.c to make key functions easier -EGG
@@ -672,10 +676,10 @@ int selfHeading() { //used by py_turnTo() -hatten
   return heading;
 }
 double selfHeadingDeg() {   //returns the player's heading in degrees -JNE //DO NOT CHANGE, NEEDED IN ORDER FOR turnToDeg to work -JRA
-  return (double)heading*2.8125;
+  return AI_xdegToDeg(selfHeading());
 }
 double selfHeadingRad() {
-  return (double)heading*.049087;
+  return AI_xdegToRad(selfHeading());
 }
 char* hud(int i) {
   if ( i < MAX_SCORE_OBJECTS) {
@@ -780,7 +784,7 @@ double selfMass(void) {
 int closestRadarId(void) {
   int i, id = -1, x, y;
   double best = -1, dist = -1;
-  for (i = selfVisible;i < num_radar;i++) {
+  for (i = selfAlive();i < num_radar;i++) {
     x = radar_ptr[i].x;
     y = radar_ptr[i].y;
     wrapWhole(radar_ptr[0].x,radar_ptr[0].y,&x,&y, RadarWidth, RadarHeight, &dist);
@@ -876,9 +880,7 @@ double itemDist(int id) {
   if (itemIdCheck(id) == 1) {
     return -1;
   }
-  int x = AI_wrap(pos.x, itemX(id), Setup->width);
-  int y = AI_wrap(pos.y, itemY(id), Setup->height);
-  return AI_distance(pos.x, pos.y, x, y);
+  return AI_distToSelf(itemX(id), itemY(id));
 }
 double itemSpeed(int id) {
   if (itemIdCheck(id) == 1) {
@@ -902,20 +904,6 @@ double itemTrackingDeg(int id) {
   }
   return AI_radToDeg(itemTrackingRad(id));
 }
-int pausedCountServer(void) {
-  int i,sum=0;
-  for (i=0;i<num_others;i++)
-    if (Others[i].mychar == 'P')
-      sum++;
-  return sum;
-}
-int tankCountServer(void) {
-  int i,sum=0;
-  for (i=0;i<num_others;i++)
-    if (Others[i].mychar == 'T')
-      sum++;
-  return sum;
-}
 int playerCountServer(void) {
   return num_others-pausedCountServer()-tankCountServer();
 }
@@ -931,8 +919,8 @@ int otherIdCheck(int id) {
 int shipCountScreen(void) {
   return num_ship;
 }
-int enemyId(int idx) {
-  return ship_ptr[idx].id;
+int enemyId(int i) {
+  return ship_ptr[i].id;
 }
 //Begin idx functions! -JNE
 int enemyIdCheck(int id) {
@@ -954,9 +942,7 @@ double enemyVelY(int id) {
   return ship_ptr[id].vel.y;
 }
 double enemyDistance(int id) {
-  int x = AI_wrap(pos.x, enemyX(id), Setup->width);
-  int y = AI_wrap(pos.y, enemyY(id), Setup->height);
-  return AI_distance(pos.x, pos.y, x, y);
+  return AI_distToSelf(enemyX(id), enemyY(id));
 }
 double enemySpeed(int id) {
   return AI_speed(enemyVelX(id), enemyVelY(id));
@@ -984,71 +970,36 @@ int enemyShield(int id) {
   return ship_ptr[id].shield;
 }
 
-
-int enemyLives(int id) {
+int playerCountServer() {
+  return num_others;
+}
+int pausedCountServer(void) {
+  int i,sum=0;
+  for (i=0;i<num_others;i++)
+    if (Others[i].mychar == 'P')
+      sum++;
+  return sum;
+}
+int tankCountServer(void) {
+  int i,sum=0;
+  for (i=0;i<num_others;i++)
+    if (Others[i].mychar == 'T')
+      sum++;
+  return sum;
+}
+int playerLives(int id) {
   return Others[id].life;
 }
-int enemyTeam(int id) {
+int playerTeam(int id) {
   return Others[id].team;
 }
-char* enemyName(int id) {
+char* playerName(int id) {
   return Others[id].name;
 }
-int enemyScore(int id) {
+int playerScore(int id) {
   return Others[id].score;
 }
 //End idx functions. -JNE
-//Returns the smallest angle which angle1 could add to itself to be equal to angle2. -EGG
-//these functions don't belong in the API IMO, and they behave inconsistently
-double angleDiffXdeg(double angle1, double angle2) {
-  double difference = angle2 - angle1;
-  while (difference > 64)
-    difference -= 128;
-  while (difference < -64)
-    difference += 128;
-  return fabs(difference);
-}
-double angleDiffDeg(double angle1, double angle2) {
-  double difference = angle2 - angle1;
-  while (difference > 180)
-    difference -= 360;
-  while (difference < -180)
-    difference += 360;
-  return fabs(difference);
-}
-double angleDiffRad(double angle1, double angle2) {
-  double difference = angle2 - angle1;
-  while (difference > PI_AI)
-    difference -= 2 * PI_AI;
-  while (difference < -PI_AI)
-    difference += 2 * PI_AI;
-  return fabs(difference);
-}
-//Returns the result of adding two angles together. -EGG
-double angleAddXdeg(double angle1, double angle2) {
-  double sum = angle1+angle2;
-  while (sum > 128)
-    sum -= 64;
-  while (sum < -128)
-    sum += 64;
-  return sum;
-}
-double angleAddDeg(double angle1, double angle2) {
-  double sum = angle1+angle2;
-  while (sum > 360)
-    sum -= 180;
-  while (sum < -360)
-    sum += 180;
-  return sum;
-}
-double angleAddRad(double angle1, double angle2) {
-  double sum = angle1+angle2;
-  while (sum > 2*PI_AI)
-    sum -= PI_AI;
-  while (sum < -2*PI_AI)
-    sum += PI_AI;
-  return sum;
-}
 //wall_here -EGG
 //Parameters: x, y, flag to draw wall feelers, flag to draw wall detection. -EGG
 //Returns 1 if there is a wall at the given x,y or 0 if not. -EGG
@@ -1092,12 +1043,11 @@ int wall_here(int x, int y) { //DO NOT CHANGE -JRA
 //Parameters: distance of line to 'feel', angle in degrees, flag to draw wall feelers, flag to draw wall detection. -EGG
 //Returns 1 if there is a wall from the player's ship at the given angle and distance or 0 if not. -EGG
 double wallFeelerRad(double dist, double angle) {
-  double x, y, ret;
-  x = pos.x + cos(angle)*dist;
-  y = pos.y + sin(angle)*dist;
-  ret = wallBetween((double)pos.x, (double)pos.y, x, y);
+  double x, y;
+  x = selfX() + cos(angle)*dist;
+  y = selfY() + sin(angle)*dist;
+  return wallBetween((double)selfX(), (double)selfY(), x, y);
   //if (ret == -1) return Py_BuildValue("i",dist); //Returns the distance of the feeler if no wall is felt - JTO
-  return ret;
 }
 double wallFeelerDeg(double dist, double angle) {
   return wallFeelerRad(dist, AI_degToRad(angle));
@@ -1952,12 +1902,10 @@ double shotVelY(int id) {
   return bullet_ptr[id].vel.y;
 }
 double shotDist(int id) {
-  int x = AI_wrap(pos.x, shotX(id), Setup->width);
-  int y = AI_wrap(pos.y, shotX(id), Setup->height);
-  return AI_distance(pos.x, pos.y, x, y);
+  return AI_distToSelf(shotX(id), shotY(id));
 }
 double shotSpeed(int id) {
-    return AI_speed(shotVelX(id), shotVelY(id));
+  return AI_speed(shotVelX(id), shotVelY(id));
 }
 double shotTrackingRad(int id) {
   int velX = shotVelX(id);
@@ -2001,9 +1949,7 @@ double asteroidVelY(int id) {
   return (double)asteroid_ptr[id].vel.y;
 }
 double asteroidDist(int id) {
-  int x = AI_wrap(pos.x, asteroidX(id), Setup->width);
-  int y = AI_wrap(pos.y, asteroidY(id), Setup->height);
-  return AI_distance(pos.x, pos.y, x, y);
+  return AI_distToSelf(asteroidX(id), asteroidY(id));
 }
 double asteroidSpeed(int id) {
   return AI_speed(asteroidVelX(id), asteroidVelY(id));
