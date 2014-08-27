@@ -1903,6 +1903,18 @@ int Send_fastshot(int ind, int type, unsigned char *p, int n)
     return n;
 }
 
+int Send_bullet(int ind, int x, int y, vector vel, int color, int teamshot)
+{
+    return Packet_printf(&Conn[ind].w,
+                        "%c%hd%hd"
+                        "%f%f"
+                        "%hd%hd",
+			 PKT_BULLET, x, y,
+                         (float)vel.x, (float)vel.y,
+                         color, teamshot);
+}
+
+
 int Send_missile(int ind, int x, int y, int len, int dir)
 {
     return Packet_printf(&Conn[ind].w, "%c%hd%hd%c%c",

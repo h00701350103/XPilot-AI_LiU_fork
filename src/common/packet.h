@@ -141,6 +141,7 @@
 #define PKT_NOT_USED_89		89
 
 /* packet types: 90 - 99 */
+#define PKT_BULLET              90
 /*
  * Use these 10 packet type numbers for
  * experimenting with new packet types.

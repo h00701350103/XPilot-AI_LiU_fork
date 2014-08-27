@@ -130,42 +130,6 @@ struct AI_msg_struct {
   char from[32];
   char to[32];
 } AI_msg[AI_MSGMAX];
-//Ship stuff -JNE
-//Stores all the information that gets updated in the ship buffer -JNE
-typedef struct {
-  double vel;
-  double velX;
-  double velY;
-  double trackingDeg;
-  double trackingRad;
-  double d;
-  //int reload;
-  ship_t ship;
-} shipData_t;
-shipData_t allShips[128][3];
-int prevFrameShips = 0;
-
-//Asteroid tracking stuff. All functions related to tracking will be more or less
-//straight copy-pastes of similar shot functions. All tracking should be 
-//generalized for enemies, shots, asteroids, missiles and mines. TODO
-typedef struct {
-  double velX;
-  double velY;
-  int angVel; 
-  int age;
-  int alert;      /*MIN(yatx + timex, xaty + timey) */
-} object_t;
-
-#define AIASTEROID_MAX 200 //TODO: figure out a good number
-
-#define AISHOT_MAX    100 /*max number of shots */
-struct AIshot_struct {
-  int x;
-  int y;
-  int color;
-  object_t ai;
-} AIshot[2][AISHOT_MAX];
-int shotCount[2] = {0, 0};
 
 int AI_delaystart;
 int AI_alerttimemult;
@@ -215,158 +179,6 @@ void wrapWhole(int x1, int y1, int* x2, int* y2, int xSize, int ySize, double* b
   *y2=yBest;
   return;
 }
-//Asteroid tracking stuff. Should be merged with shot tracking stuff (and ship,missiles,mines, tanks, wreckage, laser and radar tracking!). -hatten
-
-void AIobject_calcAlert(object_t *object, int x, int y) {
-  float A, B, C, BAC;
-  int newx1, newx2, newy1, newy2, itime, velX, velY;
-  double idist;
-
-  if (object->age == 0)
-    return;
-  velX = object->velX;
-  velY = object->velY;
-  A = sqr(vel.y - velY) + sqr(vel.x - velX);
-  B = 2 * ((pos.y - y) * (vel.y - velY) + (pos.x - x) * (vel.x - velX));
-  C = sqr(pos.x - x) + sqr(pos.y - y);
-  BAC = sqr(B) - 4 * A * C;
-
-  if (BAC >= 0) {
-    BAC = (-1 * B + sqrt(BAC));
-    if ((BAC / (2 * A)) < 0)
-      BAC = (-1 * B - sqrt(sqr(B) - 4 * A * C));
-    itime = BAC / (2 * A);
-  }
-  else {
-    itime = (-1 * B) / (2 * A);
-  }
-
-  newx1 = pos.x + vel.x * itime;
-  newx2 = x     + velX  * itime;
-  newy1 = pos.y + vel.y * itime;
-  newy2 = y     + velY  * itime;
-  wrapWhole(newx1, newy1, &newx2, &newy2, Setup->width, Setup->height, &idist);
-  /*if (itime <= 0)
-    object->alert = 30000;
-    else*/
-  object->alert = abs((int)idist + (int) (itime * AI_alerttimemult));
-}
-int AIobject_calcVel(int x, int x1, int y, int y1, int rotation, int rotation1,
-    object_t *current, object_t *past) {
-  int angVel;
-  double velX, velY;
-  if (rotation != -1) {
-    angVel = (rotation - rotation1 + 128) % 128;
-    if (angVel < 2 || angVel > 8 )
-      return 0;
-  }
-  else
-    angVel = -1;
-
-  velX = x - AI_wrap(x, x1, Setup->width);
-  velY = y - AI_wrap(y, y1, Setup->height);
-
-  if (past->age == 0) {
-    current->angVel = angVel;
-    current->velX = velX;
-    current->velY = velY;
-    current->age = 1;
-    AIobject_calcAlert(current, x, y);
-    return 2;
-  }
-
-  if (angVel != past->angVel && angVel != -1)
-    return 0;
-  if (abs(velX - past->velX) > 3)
-    return 0;
-  if (abs(velY - past->velY) > 3)
-    return 0;
-  current->angVel = angVel;
-  current->velX   = (past->velX+velX) / 2.0;
-  current->velY   = (past->velY+velY) / 2.0;
-  current->age    = past->age +1;
-  AIobject_calcAlert(current, x, y);
-  return 1;
-}
-void AIshot_calcVel() {
-  int i, j, found, shotCountPreCopies;
-  for (j=0; j < shotCount[1]; j++) {
-    if (AIshot[1][j].ai.age > 0) {
-      found=0;
-      for (i=0; i < shotCount[0]; i++) {
-        found = AIobject_calcVel(
-            AIshot[0][i].x, AIshot[1][j].x,
-            AIshot[0][i].y, AIshot[1][j].y,
-            -1, -1,
-            &AIshot[0][i].ai, &AIshot[1][j].ai);
-        if (found==1)
-          break;
-      }
-    }
-  }
-  for (j=0; j < shotCount[1]; j++) {
-    shotCountPreCopies = shotCount[0];
-    if (AIshot[1][j].ai.age == 0) {
-      found = 0;
-      for (i = 0; i < shotCountPreCopies && shotCount[0] < AISHOT_MAX; i++) {
-        if (AIshot[0][i].ai.age != 0)
-          continue;
-        AIshot[0][shotCount[0]] = AIshot[0][i];
-        found = AIobject_calcVel(
-            AIshot[0][shotCount[0]].x, AIshot[1][j].x,
-            AIshot[0][shotCount[0]].y, AIshot[1][j].y,
-            -1, -1,
-            &AIshot[0][shotCount[0]].ai, &AIshot[1][j].ai);
-        if (found==2 && shotCount[0] <= AIASTEROID_MAX)
-          shotCount[0]++;
-      }
-    }
-  }
-}
-void AIshot_refresh() {
-  int i, x_areas, y_areas, areas, max_, color;
-
-  //update old slots
-  shotCount[1] = shotCount[0];
-  for (i=0; i< shotCount[1]; i++)
-    AIshot[1][i] = AIshot[0][i];
-  //update new slots
-  shotCount[0] = 0;
-  x_areas = (active_view_width + 255) >> 8;
-  y_areas = (active_view_height + 255) >> 8;
-  areas = x_areas * y_areas;
-  max_ = areas * (num_spark_colors >= 3 ? num_spark_colors : 4);
-  for (i = 0; i < max_; i++) {
-    int x, y, j;
-    if (num_fastshot[i] > 0) {
-      x = BASE_X(i);
-      y = BASE_Y(i);
-      color = COLOR(i);
-      for (j = 0; j < num_fastshot[i]; j++) {
-        if (shotCount[0] < AISHOT_MAX) {
-          //WINSCALE is a very mysterious function that I do not know what it does. My guess is that
-          //it is used to counteract the zooming that a player can do - something that is rarely done
-          //with AI's.
-          AIshot[0][shotCount[0]].x = pos.x - ext_view_width  / 2 + WINSCALE(x + fastshot_ptr[i][j].x);
-          AIshot[0][shotCount[0]].y = pos.y + ext_view_height / 2 - WINSCALE(y - fastshot_ptr[i][j].y);
-          AIshot[0][shotCount[0]].color = color;
-          AIshot[0][shotCount[0]].ai.age = 0;
-        }
-        shotCount[0]++;
-      }
-    }
-  }
-  if (shotCount[0] > AISHOT_MAX) {
-    printf("ERROR: There are %d shots on the screen, the API is unable to process more than %d!\n",
-        shotCount[0],AISHOT_MAX);
-    shotCount[0] = 100;
-  }
-  AIshot_calcVel();
-}
-
-//
-//END OF tracking CODE
-//
 
 //Reload tracker
 int reload = 0;
@@ -824,7 +636,7 @@ int selfReload(void) {
   return reload;
 }
 //Gets the player's ID, returns an int. -EGG
-int selfID() { //DO NOT CHANGE, NEEDED IN ORDER FOR addNewShip to work -JRA
+int selfID() {
   if (self != NULL)
     return self->id;
   return -1;
@@ -852,7 +664,7 @@ double selfTrackingRad() {  //returns the player's tracking in radians  -JNE  //
   return atan2((double)vel.y,(double)vel.x);
 }
 
-double selfTrackingDeg() {  //returns the player's tracking in degrees -JNE //DO NOT CHANGE, NEEDED IN ORDER FOR aimdir &  AIshot_addtobuffer to work -JRA
+double selfTrackingDeg() {  //returns the player's tracking in degrees -JNE //DO NOT CHANGE, NEEDED IN ORDER FOR aimdir -JRA
   //if (vel.y == 0 && vel.x == 0) return selfHeadingDeg(); //fix for NaN -EGG -CJG
   return AI_radToDeg(selfTrackingRad());
 }
@@ -1090,36 +902,6 @@ double itemTrackingDeg(int id) {
   }
   return AI_radToDeg(itemTrackingRad(id));
 }
-//Start wrap helper functions -JNE
-//Checks if the map wraps between two x or y coordinates; if it does, it returns a usable value for the first coordinate -JNE
-//May glitch if the map is smaller than ext_view_width and height -JNE
-int wrapX(int firstX, int selfX) { //DO NOT CHANGE -JRA
-  int tempX;
-  tempX = firstX - selfX;
-  if (abs(tempX)>ext_view_width) {
-    if (firstX > selfX) {
-      firstX = firstX - Setup->width;
-    }
-    else {
-      firstX = firstX + Setup->width;
-    }
-  }
-  return firstX;
-}
-int wrapY(int firstY, int selfY) { //DO NOT CHANGE -JRA
-  int tempY;
-  tempY = firstY - selfY;
-  if (abs(tempY)>ext_view_height) {
-    if (firstY > selfY) {
-      firstY = firstY - Setup->height;
-    }
-    else {
-      firstY = firstY + Setup->height;
-    }
-  }
-  return firstY;
-}
-//End wrap helper functions -JNE
 int pausedCountServer(void) {
   int i,sum=0;
   for (i=0;i<num_others;i++)
@@ -1149,23 +931,8 @@ int otherIdCheck(int id) {
 int shipCountScreen(void) {
   return num_ship;
 }
-int enemyIdx(int id) {
-  int idx;
-  for (idx=0; idx<num_ship; idx++) {
-    if (allShips[idx][0].ship.id == id) {
-      return idx;
-    }
-  }
-  return -1;
-}
 int enemyId(int idx) {
   return ship_ptr[idx].id;
-  if (idx <= num_ship) {
-    return allShips[idx][0].ship.id;
-  }
-  else {
-    return -1;
-  }
 }
 //Begin idx functions! -JNE
 int enemyIdCheck(int id) {
@@ -2164,52 +1931,43 @@ double wallBetween(double x1, double y1, double x2, double y2) {
 }
 //Shot functions
 int shotCountScreen(void) {
-  return shotCount[0];
+  return num_bullets;
 }
 int shotIdCheck(int id) {
-  if (id >= shotCount[0] || id < 0) {
+  if (id >= shotCountScreen() || id < 0) {
     return 1;
-  }
-  if (AIshot[0][id].ai.age == 0) {
-    return 2;
   }
   return 0;
 }
 int shotX(int id) {
-  return AIshot[0][id].x;
+  return bullet_ptr[id].x;
 }
 int shotY(int id) {
-  return AIshot[0][id].y;
+  return bullet_ptr[id].y;
 }
-int shotVelX(int id) {
-  return AIshot[0][id].ai.velX;
+double shotVelX(int id) {
+  return bullet_ptr[id].vel.x;
 }
-int shotVelY(int id) {
-  return AIshot[0][id].ai.velY;
+double shotVelY(int id) {
+  return bullet_ptr[id].vel.y;
 }
 double shotDist(int id) {
-  int x = AI_wrap(pos.x, AIshot[0][id].x, Setup->width);
-  int y = AI_wrap(pos.y, AIshot[0][id].y, Setup->height);
+  int x = AI_wrap(pos.x, shotX(id), Setup->width);
+  int y = AI_wrap(pos.y, shotX(id), Setup->height);
   return AI_distance(pos.x, pos.y, x, y);
 }
-int shotAge(int id) {
-  return AIshot[0][id].ai.age;
-}
 double shotSpeed(int id) {
-    return AI_speed(AIshot[0][id].ai.velX, AIshot[0][id].ai.velY);
+    return AI_speed(shotVelX(id), shotVelY(id));
 }
 double shotTrackingRad(int id) {
-  int velX = AIshot[0][id].ai.velX;
-  int velY = AIshot[0][id].ai.velY;
+  int velX = shotVelX(id);
+  int velY = shotVelY(id);
   if (velX == 0 && velY == 0)
     return 0;
   return atan2(velY, velX);
 }
 double shotTrackingDeg(int id) {
   return AI_radToDeg(shotTrackingRad(id));
-}
-int shotAlert(int id) {
-  return AIshot[0][id].ai.alert;
 }
 //asteroid functions -hatten
 int asteroidIdCheck(int id) {
@@ -2601,124 +2359,6 @@ int baseTeam(int id) {
 }
 //vcannon, vfuel, vbase, vdecor removed. Don't see what they do
 
-//Methods to help AI loop -JNE
-void calcStuff(int j) {     //updates data in allShips for velocity and tracking in degrees and radians -JNE
-  allShips[j][0].d = sqrt(pow(wrapX(allShips[j][0].ship.x,pos.x)-pos.x,2)+pow(wrapX(allShips[j][0].ship.y,pos.y)-pos.y,2));
-  allShips[j][0].vel = sqrt(pow(wrapX(allShips[j][0].ship.x,allShips[j][2].ship.x)-allShips[j][2].ship.x,2)+pow(wrapY(allShips[j][0].ship.y,allShips[j][2].ship.y)-allShips[j][2].ship.y,2))/2;   //calculate velocity
-  allShips[j][0].velX = wrapX(allShips[j][0].ship.x,allShips[j][2].ship.x)-allShips[j][2].ship.x; //calculate x velocity
-  allShips[j][0].velY = wrapY(allShips[j][0].ship.y,allShips[j][2].ship.y)-allShips[j][2].ship.y; //calculate y velocity
-
-  if (allShips[j][0].velX == 0 && allShips[j][0].velY == 0) {
-    allShips[j][0].trackingRad = AI_xdegToRad(allShips[j][0].ship.dir);
-    allShips[j][0].trackingDeg = AI_xdegToDeg(allShips[j][0].ship.dir);
-  }
-  else {
-    allShips[j][0].trackingRad = atan2(allShips[j][0].velY,allShips[j][0].velX); //calculate tracking
-    allShips[j][0].trackingDeg = AI_radToDeg(allShips[j][0].trackingRad);
-  }
-}
-void updateSlots() {  //moves everything in allShips over by a frame -JNE
-  int i;
-  ship_t theShip;
-  theShip.x=-1;
-  theShip.y=-1;
-  theShip.dir=-1;
-  theShip.shield=-1;
-  theShip.id=-1;
-  for (i=0;i<128;i++) {     //check every slot in allShips
-    if (allShips[i][0].vel!=-1 || allShips[i][1].vel!=-1 || allShips[i][2].vel!=-1) { //only update slots that were updated in the last three frames
-      allShips[i][2] = allShips[i][1];  //bump the last two down one
-      allShips[i][1] = allShips[i][0];
-      allShips[i][0].vel = -1;    //this is updated later if the ship is still on screen
-      allShips[i][0].d = 9999;
-      allShips[i][0].velX=-1;
-      allShips[i][0].velY=-1;
-      allShips[i][0].trackingDeg=-1;
-      allShips[i][0].trackingRad=-1;
-      /*if (allShips[i][1].reload > 0) allShips[i][0].reload=allShips[i][1].reload-1; //reload tracking -EGG
-        else if (allShips[i][1].vel!=-1) allShips[i][0].reload=0;
-        else allShips[i][0].reload=-1;*/
-      allShips[i][0].ship=theShip;
-    }
-  }
-}
-int updateFirstOpen() { //goes through allShips, returning the index of the first open spot -JNE
-  int i;
-  for (i=0;i<128;i++) {
-    if (allShips[i][0].vel==-1 && allShips[i][1].vel==-1 && allShips[i][2].vel==-1) {
-      return i;
-    }
-  }
-  return -1;
-}
-bool updateShip(int i) { //goes through allShips and checks if a particular ship is there, returning true if it is and false if it isn't -JNE
-  int j;
-  for (j=0;j<128;j++) {
-    if (ship_ptr[i].id==allShips[j][1].ship.id) {   //find the spot where the ship's ID is located
-      allShips[j][0].ship = ship_ptr[i];
-      if (allShips[j][2].vel >= 0) {
-        calcStuff(j);
-      }
-      else {
-        allShips[j][0].vel = 0;
-      }
-      return true;            //ship was found, so don't add it as a new ship
-    }
-  }
-  return false;
-}
-void addNewShip(int firstOpen, int i) { //add a ship that has never been on screen before -JNE
-  if (selfID() != ship_ptr[i].id) {
-    if (updateShip(i)==false) {
-      allShips[firstOpen][0].ship = ship_ptr[i];
-      allShips[firstOpen][0].vel = 0;
-    }
-  }
-}
-int sortShips() { //sorts the ships in the allShips buffer by how far away they are from the player -JNE
-  //See our previous quicksort thanks ;)
-#define  MAX_LEVELS  1000
-  shipData_t piv;
-  int  beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R ;
-  beg[0]=0; end[0]=128;
-  while (i>=0) {
-    L=beg[i]; R=end[i]-1;
-    if (L<R) {
-      piv=allShips[L][0]; if (i==MAX_LEVELS-1) return -1;
-      while (L<R) {
-        while (allShips[R][0].d>=piv.d && L<R) R--;
-        if (L<R) {
-          allShips[L++][0]=allShips[R][0];
-          allShips[L][1]=allShips[R][1];
-          allShips[L][2]=allShips[R][2];
-        }
-        while (allShips[L][0].d<=piv.d && L<R) L++;
-        if (L<R) {
-          allShips[R--][0]=allShips[L][0];
-          allShips[R][1]=allShips[L][1];
-          allShips[R][2]=allShips[L][2];
-        }
-      }
-      allShips[L][0]=piv; beg[i+1]=L+1; end[i+1]=end[i]; end[i++]=L; }
-    else {
-      i--;
-    }
-  }
-  return 1;
-}
-//update ships' velocity and tracking
-void prepareShips() {
-  updateSlots();          //move all the ship data one slot (or frame) to the right -JNE
-  int firstOpen;
-  firstOpen = 0;
-  int i;
-  for (i=0;i<num_ship;i++) {      //go through each ship on screen, updating their position and adding them if they are not there -JNE
-    firstOpen = updateFirstOpen();
-    addNewShip(firstOpen, i);
-  }
-  sortShips();
-  if (reload > 0) reload--;
-}
 void release_keys() {
   int i;
   for (i=0; i < pressedKeyCount; i++) {
@@ -2729,8 +2369,6 @@ void release_keys() {
 //End of methods to help AI_loop -JNE
 //Inject our loop -EGG
 void commonInject(void) {
-  prepareShips();
-  AIshot_refresh(); //hatten
   release_keys(); //added to make thrust etc toggles -hatten
   recieveOptions();
   if (AI_delaystart % 5 == 0)
@@ -2738,7 +2376,6 @@ void commonInject(void) {
   if (AI_delaystart == 0) {
     fillOptions();
     getOption("firerepeatrate");
-    getOption("randomitemprob");
   }
   AI_delaystart++;
 }
@@ -2749,27 +2386,7 @@ void headlessMode() {
 }
 int commonStart(int argc, char* argv[], void (*injectFnPtr)(void)) {
   int j,k;
-  ship_t theShip;
-  theShip.x=-1;
-  theShip.y=-1;
-  theShip.dir=-1;
-  theShip.shield=-1;
-  theShip.id=-1;
-  for (j=0;j<128;j++) { //Initialize allShips for enemy velocity
-    for (k=0;k<3;k++) {
-      allShips[j][k].vel=-1;
-      allShips[j][k].d=9999;    //needs to be arbitrarily high so that it is sorted correctly in allShips
-      allShips[j][k].ship = theShip;
-      allShips[j][k].velX=-1;
-      allShips[j][k].velY=-1;
-      allShips[j][k].trackingDeg=-1;
-      allShips[j][k].trackingRad=-1;
-      //allShips[j][k].reload=-1;
-    }
-  }
   AI_delaystart = 0;
-  //AIshot_reset();
-  //AIshot_toggle = 1;
   AI_alerttimemult = 5;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~\nAI INTERFACE INITIALIZED\n~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
   return ai_main(argc, argv, injectFnPtr);

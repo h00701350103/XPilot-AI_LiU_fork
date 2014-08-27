@@ -838,6 +838,8 @@ static void Frame_shots(int conn, int ind)
 	    fastshot_store((int)(shot->pos.x - pv.world.x),
 			   (int)(shot->pos.y - pv.world.y),
 			   color, teamshot);
+
+            Send_bullet(conn, x, y, shot->vel, color, teamshot);
 	    break;
 
 	case OBJ_TORPEDO:

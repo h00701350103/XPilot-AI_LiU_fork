@@ -96,6 +96,7 @@ int Send_debris(int ind, int type, unsigned char *p, int n);
 int Send_wreckage(int ind, int x, int y, u_byte wrtype, u_byte size, u_byte rot);
 int Send_asteroid(int ind, int x, int y, u_byte type, u_byte size, u_byte rot, vector vel);
 int Send_fastshot(int ind, int type, unsigned char *p, int n);
+int Send_bullet(int ind, int x, int y, vector vel, int color, int teamshot);
 int Send_missile(int ind, int x, int y, int len, int dir);
 int Send_ball(int ind, int x, int y, int id);
 int Send_mine(int ind, int x, int y, int teammine, int id);

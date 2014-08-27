@@ -100,6 +100,8 @@ wreckage_t	*wreckage_ptr;
 int		 num_wreckage, max_wreckage;
 asteroid_t	*asteroid_ptr;
 int		 num_asteroids, max_asteroids;
+bullet_t	*bullet_ptr;
+int		 num_bullets, max_bullets;
 wormhole_t	*wormhole_ptr;
 int		 num_wormholes, max_wormholes;
 
@@ -783,6 +785,19 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation, vector vel)
     t.rotation = rotation;
     t.vel = vel;
     STORE(asteroid_t, asteroid_ptr, num_asteroids, max_asteroids, t);
+    return 0;
+}
+
+int Handle_bullet(int x, int y, vector vel, int color, int teamshot)
+{
+    bullet_t	t;
+
+    t.x = x;
+    t.y = y;
+    t.vel = vel;
+    t.color = color;
+    t.teamshot = teamshot;
+    STORE(bullet_t, bullet_ptr, num_bullets, max_bullets, t);
     return 0;
 }
 

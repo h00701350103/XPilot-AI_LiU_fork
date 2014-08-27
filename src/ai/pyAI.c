@@ -690,19 +690,6 @@ static PyObject* py_tankCountServer(PyObject* pySelf, PyObject* args) {
 static PyObject* py_shipCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", shipCountScreen());
 }
-static PyObject* py_enemyIdx(PyObject* pySelf, PyObject* args) {
-  int id, result;
-  if (!PyArg_ParseTuple(args, "i", &id)) {
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  result = enemyIdx(id);
-  if (result = -1) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
-    return NULL;
-  }
-  return Py_BuildValue("i", result);
-}
 static PyObject* py_enemyId(PyObject* pySelf, PyObject* args) {
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)) {
@@ -1131,7 +1118,7 @@ static PyObject* py_shotVelX(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  return Py_BuildValue("i",shotVelX(idx));
+  return Py_BuildValue("d",shotVelX(idx));
 }
 static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1143,7 +1130,7 @@ static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  return Py_BuildValue("i",shotVelY(idx));
+  return Py_BuildValue("d",shotVelY(idx));
 }
 static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1156,18 +1143,6 @@ static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   return Py_BuildValue("d",shotDist(idx));
-}
-static PyObject* py_shotAge(PyObject* pySelf, PyObject* args) {
-  int idx;
-  if (!PyArg_ParseTuple(args, "i", &idx)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  if (shotIdCheck(idx) == 1) {
-    PyErr_SetString(PyExc_IndexError, "No shot with that id");
-    return NULL;
-  }
-  return Py_BuildValue("i",shotAge(idx));
 }
 static PyObject* py_shotSpeed(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1212,22 +1187,6 @@ static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   return Py_BuildValue("i",shotTrackingDeg(idx));
-}
-static PyObject* py_shotAlert(PyObject* pySelf, PyObject* args) {
-  int idx;
-  if (!PyArg_ParseTuple(args, "i", &idx)){
-    PyErr_SetString(PyExc_TypeError, "invalid parameter");
-    return NULL;
-  }
-  if (shotIdCheck(idx) == 1) {
-    PyErr_SetString(PyExc_IndexError, "No shot with that id");
-    return NULL;
-  }
-  if (shotIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",shotAlert(idx));
 }
 static PyObject* py_asteroidCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidCountScreen());
@@ -2456,7 +2415,6 @@ static PyMethodDef libpyAI_methods[] = {
 
     {"shipCountScreen",py_shipCountScreen,METH_NOARGS,"Returns the number of ships on the screen"},
     //{"closestShipIdx",py_closestShipIdx,METH_NOARGS,"Returns the Closest ship's IDX"}, //worthless as they are sorted according to distance, though i see no reason for that
-    {"enemyIdx",py_enemyIdx,METH_VARARGS,"Returns the Specified Enemy's Idx"}, //deprecated
     {"enemyId",py_enemyId,METH_VARARGS,"Returns the Specified Enemy's Id"},
     //idx functions -JRA
     {"playerCountServer",py_playerCountServer,METH_NOARGS,"Returns number of ships on the server, includes paused players and tanks."},
@@ -2510,13 +2468,11 @@ static PyMethodDef libpyAI_methods[] = {
     {"shotX",py_shotX,METH_VARARGS,"Returns the X coordinate of a shot"},
     {"shotY",py_shotY,METH_VARARGS,"Returns the Y coordinate of a shot"},
     {"shotDist",py_shotDist,METH_VARARGS,"Returns the Distance of a shot from the ship"},
-    {"shotAge",py_shotAge,METH_VARARGS,"Returns the Distance of a shot from the ship"},
     {"shotVelX",py_shotVelX,METH_VARARGS,"Returns the X velocity of a shot"},
     {"shotVelY",py_shotVelY,METH_VARARGS,"Returns the Y velocity of a shot"},
     {"shotSpeed",py_shotSpeed,METH_VARARGS,"Returns the Velocity of a shot"},
     {"shotTrackingDeg",py_shotTrackingDeg,METH_VARARGS,"Returns the direction (degrees) of the Velocity of a shot"},
     {"shotTrackingRad",py_shotTrackingRad,METH_VARARGS,"Returns the direction (radians) of the Velocity of a shot"},
-    {"shotAlert",py_shotAlert,METH_VARARGS,"Returns a Danger Rating of a shot"},
     //Asteroid tracking functions -hatten
     {"asteroidCountScreen",py_asteroidCountScreen,METH_NOARGS,"Returns the number of asteroids on the screen"},
     {"asteroidX",py_asteroidX,METH_VARARGS,"Returns the x coordinate of the specified asteroid"},

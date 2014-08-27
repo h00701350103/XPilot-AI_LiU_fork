@@ -372,6 +372,17 @@ static void Paint_asteroids(void)
     }
 }
 
+static void Paint_bullets(void)
+{
+  //sole function of this function is deleting old bullets, we don't
+  //want to paint 'bullets' as they are simple dupe shots
+    int		i, x, y;
+    int		type, size, rot;
+
+    if ( num_bullets > 0 ) {
+	RELEASE(bullet_ptr, num_bullets, max_bullets);
+    }
+}
 
 static void Paint_wormholes(void)
 {
@@ -502,6 +513,7 @@ void Paint_shots(void)
 
     Paint_wreckages();
     Paint_asteroids();
+    Paint_bullets(); //release bullets
     Paint_wormholes();
 
     for (i = 0; i < max_; i++) {

@@ -182,6 +182,8 @@ static void Receive_init(void)
     receive_tbl[PKT_WRECKAGE]	= Receive_wreckage;
     receive_tbl[PKT_ASTEROID]	= Receive_asteroid;
     receive_tbl[PKT_WORMHOLE]	= Receive_wormhole;
+
+    receive_tbl[PKT_BULLET]	= Receive_bullet;
     for (i = 0; i < DEBRIS_TYPES; i++) {
 	receive_tbl[PKT_DEBRIS + i] = Receive_debris;
     }
@@ -2080,6 +2082,29 @@ int Receive_wormhole(void)	/* since 4.5.0 */
     }
 
     if ((n = Handle_wormhole(x, y)) == -1) {
+	return -1;
+    }
+    return 1;
+}
+
+int Receive_bullet(void)	/* since HATTEN CAME AND RUINED EVERYTHING 2014-08-27 */
+{
+    int			n;
+    vector              vel;
+    short               x, y, color, teamshot;
+    u_byte              ch;
+
+    if ((n = Packet_scanf(&rbuf,
+                          "%c%hd%hd"
+                          "%f%f"
+                          "%hd%hd",
+                          &ch, &x, &y,
+			  &(vel.x), &(vel.y),
+                          &color, &teamshot)) <= 0) {
+	return n;
+    }
+
+    if ((n = Handle_bullet(x, y, vel, color, teamshot)) == -1) {
 	return -1;
     }
     return 1;

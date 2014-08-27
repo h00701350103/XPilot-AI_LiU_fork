@@ -143,6 +143,12 @@ typedef struct {
 } asteroid_t;
 
 typedef struct {
+    short               x, y;
+    vector              vel;
+    short               color, teamshot;
+} bullet_t;
+
+typedef struct {
     short		x, y;
 } wormhole_t;
 
@@ -188,6 +194,8 @@ extern wreckage_t	*wreckage_ptr;
 extern int		 num_wreckage, max_wreckage;
 extern asteroid_t	*asteroid_ptr;
 extern int		 num_asteroids, max_asteroids;
+extern bullet_t 	*bullet_ptr;
+extern int		 num_bullets, max_bullets;
 extern wormhole_t	*wormhole_ptr;
 extern int		 num_wormholes, max_wormholes;
 
