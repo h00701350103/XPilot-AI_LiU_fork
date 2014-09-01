@@ -150,5 +150,5 @@ X_LIB = $(XLIBONLY)
 
 PROGRAMS = libpyAI.so
 
-ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) -shared -I/usr/include/python3.2 -I/usr/include/python3.3 $(MATHLIB) $(EXTRALIB))
+ProgramTarget(libpyAI.so,$(COMMON)libxpcommon.a $(AUDIOLIB),$(X_LIB) -shared -I/usr/include/python3.2 -I/usr/include/python3.3 -I/usr/include/python3.4 $(MATHLIB) $(EXTRALIB))
 CtagFiles(*.[ch] $(COMMON)*.[ch])

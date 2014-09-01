@@ -678,9 +678,6 @@ static PyObject* py_radarWidth(PyObject* pySelf, PyObject* args) {
 static PyObject* py_playerCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",playerCountServer());
 }
-static PyObject* py_otherCountServer(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",otherCountServer());
-}
 static PyObject* py_pausedCountServer(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",pausedCountServer());
 }
@@ -690,205 +687,217 @@ static PyObject* py_tankCountServer(PyObject* pySelf, PyObject* args) {
 static PyObject* py_shipCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", shipCountScreen());
 }
-static PyObject* py_enemyId(PyObject* pySelf, PyObject* args) {
+static PyObject* py_shipId(PyObject* pySelf, PyObject* args) {
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  return Py_BuildValue("i", enemyId(idx));
+  return Py_BuildValue("i", shipId(idx));
 }
-static PyObject* py_enemyX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of enemy at an index -JNE
+static PyObject* py_shipX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of ship at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyX(idx));
+  return Py_BuildValue("i",shipX(idx));
 }
-static PyObject* py_enemyY(PyObject* pySelf, PyObject* args) {    //returns y coordinate of enemy at an index -JNE
+static PyObject* py_shipY(PyObject* pySelf, PyObject* args) {    //returns y coordinate of ship at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyY(idx));
+  return Py_BuildValue("i",shipY(idx));
 }
-static PyObject* py_enemyDistance(PyObject* pySelf, PyObject* args) { //returns the distance of a ship with a particular index -JNE
+static PyObject* py_shipDistance(PyObject* pySelf, PyObject* args) { //returns the distance of a ship with a particular index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyDistance(idx));
+  return Py_BuildValue("d",shipDistance(idx));
 }
-static PyObject* py_enemyVelX(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+static PyObject* py_shipVelX(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyVelX(idx));
+  return Py_BuildValue("d",shipVelX(idx));
 }
-static PyObject* py_enemyVelY(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+static PyObject* py_shipVelY(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyVelY(idx));
+  return Py_BuildValue("d",shipVelY(idx));
 }
-static PyObject* py_enemySpeed(PyObject* pySelf, PyObject* args) {  //returns velocity of a ship with a particular index -JNE
+static PyObject* py_shipSpeed(PyObject* pySelf, PyObject* args) {  //returns velocity of a ship with a particular index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemySpeed(idx));
+  return Py_BuildValue("d",shipSpeed(idx));
 }
-static PyObject* py_enemyTrackingRad(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+static PyObject* py_shipTrackingRad(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyTrackingRad(idx));
+  return Py_BuildValue("d",shipTrackingRad(idx));
 }
-static PyObject* py_enemyTrackingDeg(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+static PyObject* py_shipTrackingDeg(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyTrackingDeg(idx));
+  return Py_BuildValue("d",shipTrackingDeg(idx));
 }
-static PyObject* py_enemyHeadingXdeg(PyObject* pySelf, PyObject* args) {
+static PyObject* py_shipHeadingXdeg(PyObject* pySelf, PyObject* args) {
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyHeadingXdeg(idx));
+  return Py_BuildValue("i",shipHeadingXdeg(idx));
 }
-static PyObject* py_enemyHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns heading in degrees of enemy at an index -JNE
+static PyObject* py_shipHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns heading in degrees of ship at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyHeadingDeg(idx));
+  return Py_BuildValue("d",shipHeadingDeg(idx));
 }
-static PyObject* py_enemyHeadingRad(PyObject* pySelf, PyObject* args) {   //returns heading in radians of enemy at an index -JNE
+static PyObject* py_shipHeadingRad(PyObject* pySelf, PyObject* args) {   //returns heading in radians of ship at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyHeadingRad(idx));
+  return Py_BuildValue("d",shipHeadingRad(idx));
 }
-static PyObject* py_enemyShield(PyObject* pySelf, PyObject* args) {   //returns shield status of enemy at an index -JNE
+static PyObject* py_shipShield(PyObject* pySelf, PyObject* args) {   //returns shield status of ship at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (shipIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyShield(idx));
+  return Py_BuildValue("i",shipShield(idx));
 }
-static PyObject* py_enemyLives(PyObject* pySelf, PyObject* args) {    //returns lives of enemy at an index -JNE
+static PyObject* py_playerId(PyObject* pySelf, PyObject* args) {    //returns lives of player at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (playerIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No player with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyLives(idx));
+  return Py_BuildValue("i",playerId(idx));
 }
-static PyObject* py_enemyTeam(PyObject* pySelf, PyObject* args) { //returns team of enemy at an index -JNE
+static PyObject* py_playerLives(PyObject* pySelf, PyObject* args) {    //returns lives of player at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (playerIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No player with that id");
     return NULL;
   }
-  return Py_BuildValue("i",enemyTeam(idx));
+  return Py_BuildValue("i",playerLives(idx));
 }
-static PyObject* py_enemyName(PyObject* pySelf, PyObject* args) {   //returns name of enemy at an index -JNE
+static PyObject* py_playerTeam(PyObject* pySelf, PyObject* args) { //returns team of player at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (otherIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (playerIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No player with that id");
     return NULL;
   }
-  return Py_BuildValue("s",enemyName(idx));
+  return Py_BuildValue("i",playerTeam(idx));
 }
-static PyObject* py_enemyScore(PyObject* pySelf, PyObject* args) {    //returns score of enemy at an index -JNE
+static PyObject* py_playerName(PyObject* pySelf, PyObject* args) {   //returns name of player at an index -JNE
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
-  if (enemyIdCheck(idx) != 0) {
-    PyErr_SetString(PyExc_TypeError, "No enemy with that id");
+  if (playerIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No player with that id");
     return NULL;
   }
-  return Py_BuildValue("d",enemyScore(idx));
+  return Py_BuildValue("s",playerName(idx));
+}
+static PyObject* py_playerScore(PyObject* pySelf, PyObject* args) {    //returns score of player at an index -JNE
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (playerIdCheck(idx) != 0) {
+    PyErr_SetString(PyExc_TypeError, "No player with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d",playerScore(idx));
 }
 static PyObject* py_xdegToDeg(PyObject* pySelf, PyObject* args) {
   double xdeg;
@@ -2367,29 +2376,29 @@ static PyMethodDef libpyAI_methods[] = {
 
     {"shipCountScreen",py_shipCountScreen,METH_NOARGS,"Returns the number of ships on the screen"},
     //{"closestShipIdx",py_closestShipIdx,METH_NOARGS,"Returns the Closest ship's IDX"}, //worthless as they are sorted according to distance, though i see no reason for that
-    {"enemyId",py_enemyId,METH_VARARGS,"Returns the Specified Enemy's Id"},
+    {"shipId",py_shipId,METH_VARARGS,"Returns the Specified Enemy's Id"},
     //idx functions -JRA
+    {"shipDistance",py_shipDistance,METH_VARARGS,"Returns the Distance between the ship and the Specified Enemy"},
+    {"shipSpeed",py_shipSpeed,METH_VARARGS,"Returns the Speed of the Specified Enemy"},
+    {"shipVelX",py_shipVelX,METH_VARARGS,"Returns the x velocity of the Specified Enemy"},
+    {"shipVelY",py_shipVelY,METH_VARARGS,"Returns the y velocity of the Specified Enemy"},
+    //{"shipReload",py_enemyReload,METH_VARARGS,"Returns the Specified Enemy's Reload time remaining"},
+    {"shipTrackingRad",py_shipTrackingRad,METH_VARARGS,"Returns the Specified Enemy's Tracking in Radians"},
+    {"shipTrackingDeg",py_shipTrackingDeg,METH_VARARGS,"Returns the Specified Enemy's Tracking in Degrees"},
+    {"shipX",py_shipX,METH_VARARGS,"Returns the Specified Enemy's X Coordinate"},
+    {"shipY",py_shipY,METH_VARARGS,"Returns the Specified Enemy's Y Coordinate"},
+    {"shipHeadingXdeg",py_shipHeadingXdeg,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in xdegrees"},
+    {"shipHeadingDeg",py_shipHeadingDeg,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in Degrees"},
+    {"shipHeadingRad",py_shipHeadingRad,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in Radians"},
+    {"shipShield",py_shipShield,METH_VARARGS,"Returns the Specified Enemy's Shield Status"},
     {"playerCountServer",py_playerCountServer,METH_NOARGS,"Returns number of ships on the server, includes paused players and tanks."},
-    {"otherCountServer",py_otherCountServer,METH_NOARGS,"Returns number of ships on the server, includes paused players and tanks."},
     {"pausedCountServer",py_pausedCountServer,METH_NOARGS,"Returns number of paused players on the server."},
     {"tankCountServer",py_tankCountServer,METH_NOARGS,"Returns number of tanks on the server."},
-    {"enemyDistance",py_enemyDistance,METH_VARARGS,"Returns the Distance between the ship and the Specified Enemy"},
-    {"enemySpeed",py_enemySpeed,METH_VARARGS,"Returns the Speed of the Specified Enemy"},
-    {"enemyVelX",py_enemyVelX,METH_VARARGS,"Returns the x velocity of the Specified Enemy"},
-    {"enemyVelY",py_enemyVelY,METH_VARARGS,"Returns the y velocity of the Specified Enemy"},
-    //{"enemyReload",py_enemyReload,METH_VARARGS,"Returns the Specified Enemy's Reload time remaining"},
-    {"enemyTrackingRad",py_enemyTrackingRad,METH_VARARGS,"Returns the Specified Enemy's Tracking in Radians"},
-    {"enemyTrackingDeg",py_enemyTrackingDeg,METH_VARARGS,"Returns the Specified Enemy's Tracking in Degrees"},
-    {"enemyX",py_enemyX,METH_VARARGS,"Returns the Specified Enemy's X Coordinate"},
-    {"enemyY",py_enemyY,METH_VARARGS,"Returns the Specified Enemy's Y Coordinate"},
-    {"enemyHeadingXdeg",py_enemyHeadingXdeg,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in xdegrees"},
-    {"enemyHeadingDeg",py_enemyHeadingDeg,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in Degrees"},
-    {"enemyHeadingRad",py_enemyHeadingRad,METH_VARARGS,"Returns the Heading of the Specified Enemy from the ship in Radians"},
-    {"enemyShield",py_enemyShield,METH_VARARGS,"Returns the Specified Enemy's Shield Status"},
-    {"enemyLives",py_enemyLives,METH_VARARGS,"Returns the Specified Enemy's Remaining Lives"},
-    {"enemyTeam",py_enemyTeam,METH_VARARGS,"Returns the Specified Enemy's Team"},
-    {"enemyName",py_enemyName,METH_VARARGS,"Returns the Specified Enemy's Name"},
-    {"enemyScore",py_enemyScore,METH_VARARGS,"Returns the Specified Enemy's Score"},
+    {"playerId",py_playerId,METH_VARARGS,"Returns the Specified Enemy's Id"},
+    {"playerLives",py_playerLives,METH_VARARGS,"Returns the Specified Enemy's Remaining Lives"},
+    {"playerTeam",py_playerTeam,METH_VARARGS,"Returns the Specified Enemy's Team"},
+    {"playerName",py_playerName,METH_VARARGS,"Returns the Specified Enemy's Name"},
+    {"playerScore",py_playerScore,METH_VARARGS,"Returns the Specified Enemy's Score"},
 
     {"xdegToDeg",py_xdegToDeg,METH_VARARGS,"Converts xpilot degrees to degrees"},
     {"xdegToRad",py_xdegToRad,METH_VARARGS,"Converts xpilot degrees to radians"},

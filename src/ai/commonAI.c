@@ -180,8 +180,8 @@ void wrapWhole(int x1, int y1, int* x2, int* y2, int xSize, int ySize, double* b
   return;
 }
 double AI_distToSelf(int x, int y) {
-  int x = AI_wrap(selfX(), x, Setup->width);
-  int y = AI_wrap(selfY(), y, Setup->height);
+  x = AI_wrap(selfX(), x, Setup->width);
+  y = AI_wrap(selfY(), y, Setup->height);
   return AI_distance(selfX(), selfY(), x, y);
 }
 //Reload tracker
@@ -904,88 +904,85 @@ double itemTrackingDeg(int id) {
   }
   return AI_radToDeg(itemTrackingRad(id));
 }
-int playerCountServer(void) {
-  return num_others-pausedCountServer()-tankCountServer();
-}
-int otherCountServer(void) {
-  return num_others;
-}
-int otherIdCheck(int id) {
-  if (id >= otherCountServer() || id < 0) {
-    return 1;
-  }
-  return 0;
-}
 int shipCountScreen(void) {
   return num_ship;
 }
-int enemyId(int i) {
-  return ship_ptr[i].id;
-}
 //Begin idx functions! -JNE
-int enemyIdCheck(int id) {
-  if (id >= num_ship || id < 0) {
+int shipIdCheck(int id) {
+  if (id >= shipCountScreen() || id < 0) {
     return 1;
   }
   return 0;
 }
-int enemyX(int id) {
+int shipId(int i) {
+  return ship_ptr[i].id;
+}
+int shipX(int id) {
   return ship_ptr[id].x;
 }
-int enemyY(int id) {
+int shipY(int id) {
   return ship_ptr[id].y;
 }
-double enemyVelX(int id) {
+double shipVelX(int id) {
   return ship_ptr[id].vel.x;
 }
-double enemyVelY(int id) {
+double shipVelY(int id) {
   return ship_ptr[id].vel.y;
 }
-double enemyDistance(int id) {
-  return AI_distToSelf(enemyX(id), enemyY(id));
+int shipShield(int id) {
+  return ship_ptr[id].shield;
 }
-double enemySpeed(int id) {
-  return AI_speed(enemyVelX(id), enemyVelY(id));
+int shipHeadingXdeg(int id) {
+  return ship_ptr[id].dir;
 }
-double enemyTrackingRad(int id) {
-  double velX = enemyVelX(id);
-  double velY = enemyVelY(id);
+double shipDistance(int id) {
+  return AI_distToSelf(shipX(id), shipY(id));
+}
+double shipSpeed(int id) {
+  return AI_speed(shipVelX(id), shipVelY(id));
+}
+double shipTrackingRad(int id) {
+  double velX = shipVelX(id);
+  double velY = shipVelY(id);
   if (velX == 0 && velY == 0) //TODO: Needed?
     return 0;
   return atan2(velY, velX);
 }
-double enemyTrackingDeg(int id) {
-  return AI_radToDeg(enemyTrackingRad(id));
+double shipTrackingDeg(int id) {
+  return AI_radToDeg(shipTrackingRad(id));
 }
-int enemyHeadingXdeg(int id) {
-  return ship_ptr[id].dir;
+double shipHeadingDeg(int id) {
+  return AI_xdegToDeg(shipHeadingXdeg(id));
 }
-double enemyHeadingDeg(int id) {
-  return AI_xdegToDeg(enemyHeadingXdeg(id));
-}
-double enemyHeadingRad(int id) {
-  return AI_xdegToRad(enemyHeadingXdeg(id));
-}
-int enemyShield(int id) {
-  return ship_ptr[id].shield;
+double shipHeadingRad(int id) {
+  return AI_xdegToRad(shipHeadingXdeg(id));
 }
 
-int playerCountServer() {
+int playerCountServer(void) {
   return num_others;
 }
 int pausedCountServer(void) {
   int i,sum=0;
-  for (i=0;i<num_others;i++)
+  for (i=0;i<playerCountServer();i++)
     if (Others[i].mychar == 'P')
       sum++;
   return sum;
 }
 int tankCountServer(void) {
   int i,sum=0;
-  for (i=0;i<num_others;i++)
+  for (i=0;i<playerCountServer();i++)
     if (Others[i].mychar == 'T')
       sum++;
   return sum;
+}
+int playerIdCheck(int id) {
+  if (id >= playerCountServer() || id < 0) {
+    return 1;
+  }
+  return 0;
+}
+int playerId(int i) {
+  return Others[i].id;
 }
 int playerLives(int id) {
   return Others[id].life;
