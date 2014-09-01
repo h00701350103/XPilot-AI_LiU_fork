@@ -640,7 +640,7 @@ int selfReload(void) {
   return reload;
 }
 //Gets the player's ID, returns an int. -EGG
-int selfID() {
+int selfId() {
   if (self != NULL)
     return self->id;
   return -1;

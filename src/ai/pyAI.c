@@ -15,8 +15,8 @@ static PyObject* py_turnRight(PyObject* pySelf, PyObject*args) { //turns right a
   Py_RETURN_NONE;
 }
 void turnResistanceCheck(void) {
-  if (getTurnResistance != 0) {
-    printf("WARNING: turnResistance != 0");
+  if (getTurnResistance() != 0) {
+    printf("WARNING: turnResistance != 0\n");
   }
 }
 static PyObject* py_turnXdeg(PyObject* pySelf, PyObject* args)
@@ -539,8 +539,8 @@ static PyObject* py_selfLockDist(PyObject* pySelf, PyObject* args) {      //retu
 static PyObject* py_selfReload(PyObject* pySelf, PyObject* args) {    //returns the player's reload time remaining
   return Py_BuildValue("i",selfReload());
 }
-static PyObject* py_selfID(PyObject* pySelf, PyObject* args) { 
-  return Py_BuildValue("i",selfID());
+static PyObject* py_selfId(PyObject* pySelf, PyObject* args) { 
+  return Py_BuildValue("i",selfId());
 }
 static PyObject* py_selfAlive(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",selfAlive());
@@ -2342,7 +2342,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"lockHeadingRad",py_lockHeadingRad,METH_NOARGS,"Returns in radians the direction of the ship's Lock-on of an enemy"},
     {"selfLockDist",py_selfLockDist,METH_NOARGS,"Returns the Distance of the enemy that the ship has Locked-on to"},
     {"selfReload",py_selfReload,METH_NOARGS,"Returns the player's Reload time remaining, based on a call to fireShot()"},
-    {"selfID",py_selfID,METH_NOARGS,"Returns the ID of the ship"},
+    {"selfId",py_selfId,METH_NOARGS,"Returns the ID of the ship"},
     {"selfAlive",py_selfAlive,METH_NOARGS,"Returns if the ship is Dead or Alive"},
     {"selfTeam",py_selfTeam,METH_NOARGS,"Returns the ship's Team"},
     {"selfLives",py_selfLives,METH_NOARGS,"Returns how many Lives are left for the ship"},
