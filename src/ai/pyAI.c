@@ -1093,6 +1093,18 @@ static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
   }
   return Py_BuildValue("d",shotVelY(idx));
 }
+static PyObject* py_shotFriendly(PyObject* pySelf, PyObject* args) {
+  int idx;
+  if (!PyArg_ParseTuple(args, "i", &idx)){
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (shotIdCheck(idx) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No shot with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i",shotFriendly(idx));
+}
 static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
@@ -2424,6 +2436,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"shotDist",py_shotDist,METH_VARARGS,"Returns the Distance of a shot from the ship"},
     {"shotVelX",py_shotVelX,METH_VARARGS,"Returns the X velocity of a shot"},
     {"shotVelY",py_shotVelY,METH_VARARGS,"Returns the Y velocity of a shot"},
+    {"shotFriendly",py_shotFriendly,METH_VARARGS,"Returns whether a velocity is friendly"},
     {"shotSpeed",py_shotSpeed,METH_VARARGS,"Returns the Velocity of a shot"},
     {"shotTrackingDeg",py_shotTrackingDeg,METH_VARARGS,"Returns the direction (degrees) of the Velocity of a shot"},
     {"shotTrackingRad",py_shotTrackingRad,METH_VARARGS,"Returns the direction (radians) of the Velocity of a shot"},

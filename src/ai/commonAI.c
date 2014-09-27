@@ -1898,6 +1898,9 @@ double shotVelX(int id) {
 double shotVelY(int id) {
   return bullet_ptr[id].vel.y;
 }
+int shotFriendly(int id) {
+  return bullet_ptr[id].teamshot;
+}
 double shotDist(int id) {
   return AI_distToSelf(shotX(id), shotY(id));
 }

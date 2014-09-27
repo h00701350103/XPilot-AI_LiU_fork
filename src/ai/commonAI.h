@@ -192,6 +192,7 @@ int shotX(int id);
 int shotY(int id);
 double shotVelX(int id);
 double shotVelY(int id);
+int shotFriendly(int id);
 double shotDist(int id);
 double shotSpeed(int id);
 double shotTrackingRad(int id);
