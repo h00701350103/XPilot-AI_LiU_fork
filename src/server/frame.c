@@ -1094,7 +1094,7 @@ static void Frame_ships(int conn, int ind)
 
 static void Frame_radar(int conn, int ind)
 {
-    int			i, k, mask, shownuke, size;
+    int			i, k, mask, shownuke, size, newsize;
     player		*pl = Players[ind];
     object		*shot;
     DFLOAT		x, y;
@@ -1122,21 +1122,26 @@ static void Frame_radar(int conn, int ind)
 
 	    shownuke = (nukesOnRadar && (shot)->mods.nuclear);
 	    if (shownuke && (frame_loops & 2)) {
+		newsize = 5;
 		size = 3;
 	    } else {
+		newsize = 5;
 		size = 0;
 	    }
 
 	    if (BIT(shot->type, OBJ_MINE)) {
 		if (!minesOnRadar && !shownuke)
 		    continue;
+		newsize = 4;
 		if (frame_loops % 8 >= 6)
 		    continue;
 	    } else if (BIT(shot->type, OBJ_BALL)) {
 		size = 2;
+		newsize = size;
 	    } else if (BIT(shot->type, OBJ_ASTEROID)) {
 		size = WIRE_PTR(shot)->size + 1;
 		size |= 0x80;
+		newsize = size;
 	    } else {
 		if (!missilesOnRadar && !shownuke)
 		    continue;
@@ -1149,6 +1154,7 @@ static void Frame_radar(int conn, int ind)
 	    if (Wrap_length(pl->pos.x - x,
 			    pl->pos.y - y) <= pl->sensor_range) {
 		Frame_radar_buffer_add((int)x, (int)y, size);
+		Send_newradar(conn, (int)x, (int)y, shot->vel, newsize);
 	    }
 	}
     }
@@ -1193,6 +1199,7 @@ static void Frame_radar(int conn, int ind)
 		size |= 0x80;
 	    }
 	    Frame_radar_buffer_add((int)x, (int)y, size);
+	    Send_newradar(conn, (int)x, (int)y, Players[i]->vel, size);
 	}
     }
 

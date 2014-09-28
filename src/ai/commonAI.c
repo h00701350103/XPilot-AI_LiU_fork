@@ -615,6 +615,12 @@ int selfX(void) {
 int selfY(void) {
   return pos.y;
 }
+int selfRadarX(void) {
+  return pos.x / mapWidthPixels() * radarWidth();
+}
+int selfRadarY(void) {
+  return pos.y / mapHeightPixels() * radarHeight();
+}
 double selfVelX(void) {
   return vel.x;
 }
@@ -784,10 +790,10 @@ double selfMass(void) {
 int closestRadarId(void) {
   int i, id = -1, x, y;
   double best = -1, dist = -1;
-  for (i = selfAlive();i < num_radar;i++) {
-    x = radar_ptr[i].x;
-    y = radar_ptr[i].y;
-    wrapWhole(radar_ptr[0].x,radar_ptr[0].y,&x,&y, RadarWidth, RadarHeight, &dist);
+  for (i = 0;i < num_newradar;i++) {
+    x = newradar_ptr[i].x;
+    y = newradar_ptr[i].y;
+    wrapWhole(selfRadarX(),selfRadarY(),&x,&y, RadarWidth, RadarHeight, &dist);
 
     if ((dist < best) || (best == -1)) { 
       best = dist;                       //update distance
@@ -798,28 +804,33 @@ int closestRadarId(void) {
     return -1;
   return id;
 }
+int radarIdCheck(int id) {
+  if (id >= radarCount() || id < 0) {
+    return 1;
+  }
+  return 0;
+}
 int radarX(int id) {
   //returns X coordinate of specified enemy -hatten
-  if (id < num_radar) {
-    return radar_ptr[id].x;
-  }
-  return -1;
+  return newradar_ptr[id].x;
 }
 int radarY(int id) {
   //returns X coordinate of specified enemy -hatten
-  if (id < num_radar) {
-    return radar_ptr[id].y;
-  }
-  return -1;
+  return newradar_ptr[id].y;
+}
+double radarVelX(int id) {
+  //returns X coordinate of specified enemy -hatten
+  return newradar_ptr[id].vel.x;
+}
+double radarVelY(int id) {
+  //returns X coordinate of specified enemy -hatten
+  return newradar_ptr[id].vel.y;
 }
 int radarType(int id) {
-  if (id < num_radar) {
-    return radar_ptr[id].size;
-  }
-  return -1;
+  return newradar_ptr[id].size;
 }
 int radarCount(void) {
-  return num_radar;
+  return num_newradar;
 }
 int radarHeight(void) {
   return RadarHeight;
@@ -2331,12 +2342,11 @@ void headlessMode() {
   headless=1;
 }
 int commonStart(int argc, char* argv[], void (*injectFnPtr)(void)) {
-  int j,k;
   AI_delaystart = 0;
   AI_alerttimemult = 5;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~\nAI INTERFACE INITIALIZED\n~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
   return ai_main(argc, argv, injectFnPtr);
 }
 char* getAiVersion(void) {
-  return "Xpilot-AI-fork 1.0 20140702";
+  return "Xpilot-AI-fork 1.1 20140928";
 }

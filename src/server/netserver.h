@@ -112,6 +112,7 @@ int Send_refuel(int ind, int x0, int y0, int x1, int y1);
 int Send_connector(int ind, int x0, int y0, int x1, int y1, int tractor);
 int Send_laser(int ind, int color, int x, int y, int len, int dir);
 int Send_radar(int ind, int x, int y, int size);
+int Send_newradar(int ind, int x, int y, vector vel, int size);
 int Send_fastradar(int ind, unsigned char *buf, int n);
 int Send_damaged(int ind, int damaged);
 int Send_message(int ind, const char *msg);

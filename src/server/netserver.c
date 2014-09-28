@@ -1914,6 +1914,23 @@ int Send_bullet(int ind, int x, int y, vector vel, int color, int teamshot)
                          color, teamshot);
 }
 
+int Send_newradar(int ind, int x, int y, vector vel, int size)
+{
+  const int           radar_width = 256;
+  int                 radar_height = (radar_width * World.y) / World.x;
+
+    x = (radar_width * x) / World.width;
+    y = (radar_height * y) / World.height;
+    vel.x = (radar_width * vel.x) / World.width;
+    vel.y = (radar_height * vel.y) / World.height;
+    return Packet_printf(&Conn[ind].w,
+                        "%c%hd%hd"
+                        "%f%f"
+                        "%hd",
+			 PKT_NEWRADAR, x, y,
+                         (float)vel.x, (float)vel.y,
+                         size);
+}
 
 int Send_missile(int ind, int x, int y, int len, int dir)
 {

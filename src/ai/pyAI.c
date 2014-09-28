@@ -648,6 +648,10 @@ static PyObject* py_radarX(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
+    return NULL;
+  }
   return Py_BuildValue("i", radarX(id));
 }
 static PyObject* py_radarY(PyObject* pySelf, PyObject* args) {
@@ -656,12 +660,44 @@ static PyObject* py_radarY(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
+    return NULL;
+  }
   return Py_BuildValue("i", radarY(id));
+}
+static PyObject* py_radarVelX(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d", radarVelX(id));
+}
+static PyObject* py_radarVelY(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
+    return NULL;
+  }
+  return Py_BuildValue("d", radarVelY(id));
 }
 static PyObject* py_radarType(PyObject* pySelf, PyObject* args) {
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
     return NULL;
   }
   return Py_BuildValue("i", radarType(id));
@@ -2378,7 +2414,9 @@ static PyMethodDef libpyAI_methods[] = {
     //radar functions -hatten
     {"radarX", py_radarX,METH_VARARGS,"Returns the X radar coordinate of the specified ship"},
     {"radarY", py_radarY,METH_VARARGS,"Returns the Y radar coordinate of the specified ship"},
-    {"radarType", py_radarType,METH_VARARGS,"Returns the Y radar coordinate of the specified ship"},
+    {"radarVelX", py_radarVelX,METH_VARARGS,"Returns the X velocity of the specified ship"},
+    {"radarVelY", py_radarVelY,METH_VARARGS,"Returns the Y velocity of the specified ship"},
+    {"radarType", py_radarType,METH_VARARGS,"Returns the type of the specified radar object"},
     {"closestRadarId",py_closestRadarId,METH_NOARGS,"Returns the closest ship's radarId"},
     {"radarCount",py_radarCount,METH_NOARGS,"Returns the number of ships on the radar"},
     {"radarHeight",py_radarHeight,METH_NOARGS,"Returns the height of the radar"},
@@ -2475,7 +2513,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"ballCountScreen",py_ballCountScreen,METH_NOARGS,"Returns the number of balls on the screen"},
     {"ballX",py_ballX,METH_VARARGS,"Returns the x coordinate of the specified ball"},
     {"ballY",py_ballY,METH_VARARGS,"Returns the x coordinate of the specified ball"},
-    {"ballId",py_ballY,METH_VARARGS,"Returns the id of the specified ball"},
+    {"ballId",py_ballId,METH_VARARGS,"Returns the id of the specified ball"},
     {"connectorCountScreen",py_connectorCountScreen,METH_NOARGS,"Returns the number of connectors on the screen"},
     {"connectorX0",py_connectorX0,METH_VARARGS,"Returns the connector's X0 Position"},
     {"connectorX1",py_connectorX1,METH_VARARGS,"Returns the connector's X1 Position"},

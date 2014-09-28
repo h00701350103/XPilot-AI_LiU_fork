@@ -149,6 +149,12 @@ typedef struct {
 } bullet_t;
 
 typedef struct {
+    short               x, y;
+    vector              vel;
+    short               size;
+} newradar_t;
+
+typedef struct {
     short		x, y;
 } wormhole_t;
 
@@ -196,6 +202,8 @@ extern asteroid_t	*asteroid_ptr;
 extern int		 num_asteroids, max_asteroids;
 extern bullet_t 	*bullet_ptr;
 extern int		 num_bullets, max_bullets;
+extern newradar_t 	*newradar_ptr;
+extern int		 num_newradar, max_newradar;
 extern wormhole_t	*wormhole_ptr;
 extern int		 num_wormholes, max_wormholes;
 

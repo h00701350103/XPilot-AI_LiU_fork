@@ -102,6 +102,8 @@ asteroid_t	*asteroid_ptr;
 int		 num_asteroids, max_asteroids;
 bullet_t	*bullet_ptr;
 int		 num_bullets, max_bullets;
+newradar_t	*newradar_ptr;
+int		 num_newradar, max_newradar;
 wormhole_t	*wormhole_ptr;
 int		 num_wormholes, max_wormholes;
 
@@ -798,6 +800,18 @@ int Handle_bullet(int x, int y, vector vel, int color, int teamshot)
     t.color = color;
     t.teamshot = teamshot;
     STORE(bullet_t, bullet_ptr, num_bullets, max_bullets, t);
+    return 0;
+}
+
+int Handle_newradar(int x, int y, vector vel, int size)
+{
+    newradar_t	t;
+
+    t.x = x;
+    t.y = y;
+    t.vel = vel;
+    t.size = size;
+    STORE(newradar_t, newradar_ptr, num_newradar, max_newradar, t);
     return 0;
 }
 

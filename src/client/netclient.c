@@ -184,6 +184,7 @@ static void Receive_init(void)
     receive_tbl[PKT_WORMHOLE]	= Receive_wormhole;
 
     receive_tbl[PKT_BULLET]	= Receive_bullet;
+    receive_tbl[PKT_NEWRADAR]	= Receive_newradar;
     for (i = 0; i < DEBRIS_TYPES; i++) {
 	receive_tbl[PKT_DEBRIS + i] = Receive_debris;
     }
@@ -2105,6 +2106,29 @@ int Receive_bullet(void)	/* since HATTEN CAME AND RUINED EVERYTHING 2014-08-27 *
     }
 
     if ((n = Handle_bullet(x, y, vel, color, teamshot)) == -1) {
+	return -1;
+    }
+    return 1;
+}
+
+int Receive_newradar(void)	/* since HATTEN CAME AND RUINED EVERYTHING 2014-09-28 */
+{
+    int			n;
+    vector              vel;
+    short               x, y, size;
+    u_byte              ch;
+
+    if ((n = Packet_scanf(&rbuf,
+                          "%c%hd%hd"
+                          "%f%f"
+                          "%hd",
+                          &ch, &x, &y,
+			  &(vel.x), &(vel.y),
+                          &size)) <= 0) {
+	return n;
+    }
+
+    if ((n = Handle_newradar(x, y, vel, size)) == -1) {
 	return -1;
     }
     return 1;
