@@ -142,6 +142,7 @@
 
 /* packet types: 90 - 99 */
 #define PKT_BULLET              90
+#define PKT_NEWRADAR            91
 /*
  * Use these 10 packet type numbers for
  * experimenting with new packet types.
