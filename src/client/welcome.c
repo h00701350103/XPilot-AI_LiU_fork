@@ -115,7 +115,7 @@ struct ServerInfo {
 			*freebases,
 			*queue_str,
 			*domain,
-			pingtime_str[5];
+			pingtime_str[15];
     unsigned		port,
 			ip,
 			users,
