@@ -136,6 +136,8 @@ int selfFuelCurrent(void);
 double selfMass(void);
 int closestRadarId(void);
 int radarIdCheck(int id);
+int selfRadarX(void);
+int selfRadarY(void);
 int radarX(int id);
 int radarY(int id);
 double radarVelX(int id);

@@ -642,6 +642,12 @@ static PyObject* py_selfMass(PyObject* pySelf, PyObject* args) {
 static PyObject* py_closestRadarId(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", closestRadarId());
 }
+static PyObject* py_selfRadarX(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i", selfRadarX());
+}
+static PyObject* py_selfRadarY(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i", selfRadarY());
+}
 static PyObject* py_radarX(PyObject* pySelf, PyObject* args) {
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
@@ -2412,6 +2418,8 @@ static PyMethodDef libpyAI_methods[] = {
     {"selfMass",py_selfMass,METH_NOARGS,"Returns the ship's mass (depends on mass and fuel)"},
 
     //radar functions -hatten
+    {"selfRadarX", py_selfRadarX,METH_NOARGS,"Returns the X radar coordinate of the ship"},
+    {"selfRadarY", py_selfRadarY,METH_NOARGS,"Returns the Y radar coordinate of the ship"},
     {"radarX", py_radarX,METH_VARARGS,"Returns the X radar coordinate of the specified ship"},
     {"radarY", py_radarY,METH_VARARGS,"Returns the Y radar coordinate of the specified ship"},
     {"radarVelX", py_radarVelX,METH_VARARGS,"Returns the X velocity of the specified ship"},
