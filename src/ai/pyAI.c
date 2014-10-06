@@ -1348,8 +1348,8 @@ static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
 static PyObject* py_phasingTime(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",phasingTime());
 }
-static PyObject* py_nextCheckPoint(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",getNextCheckPoint());
+static PyObject* py_nextCheckpoint(PyObject* pySelf, PyObject* args) {
+  return Py_BuildValue("i",getNextCheckpoint());
 }
 static PyObject* py_checkpointX(PyObject* pySelf, PyObject* args) {
   int id;
@@ -2286,7 +2286,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"turnLeft",py_turnLeft,METH_NOARGS,"Turns left"},
     {"turnRight",py_turnRight,METH_NOARGS,"Turns right"},
     {"turnXdeg",py_turnXdeg,METH_VARARGS,"Turns the specified number of xpilot-degrees"}, //-hatten
-    {"turnXdegTo",py_turnToXdeg,METH_VARARGS,"Turns the ship to the specified xpilot-degree"}, //-hatten
+    {"turnToXdeg",py_turnToXdeg,METH_VARARGS,"Turns the ship to the specified xpilot-degree"}, //-hatten
     {"turnDeg",py_turnDeg,METH_VARARGS,"Turns the specified number of degrees"}, //-hatten
     {"turnToDeg",py_turnToDeg,METH_VARARGS,"Turns the ship to the specified Degree"}, //-hatten
     {"turnRad",py_turnRad,METH_VARARGS,"Turns the specified number of radians"}, //-hatten
@@ -2505,7 +2505,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"itemTrackingRad",py_itemTrackingRad,METH_VARARGS,"Returns the direction (radians) of the Velocity of an item"},
     //beta functions~~~
     {"phasingTime",py_phasingTime,METH_NOARGS,"Returns the time left on the current phasing item."}, //TODO
-    {"nextCheckPoint",py_nextCheckPoint,METH_NOARGS,"Returns the index of the next checkpoint"},
+    {"nextCheckpoint",py_nextCheckpoint,METH_NOARGS,"Returns the index of the next checkpoint"},
     {"checkpointX",py_checkpointX,METH_VARARGS,"Returns the x coordinate of the specified checkpoint"}, //TODO: Use mapdata to return -1 if the checkpoint doesn't exist.
     {"checkpointY",py_checkpointY,METH_VARARGS,"Returns the y coordinate of the specified checkpoint"},
     {"checkpointBlockX",py_checkpointBlockX,METH_VARARGS,"Returns the x block of the specified checkpoint"},

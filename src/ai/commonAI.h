@@ -214,7 +214,7 @@ double asteroidSpeed(int id);
 double asteroidTrackingRad(int id);
 double asteroidTrackingDeg(int id);
 int phasingTime(void);
-int getNextCheckPoint(void);
+int getNextCheckpoint(void);
 int checkpointIdCheck(int id);
 int checkpointBlockX(int id);
 int checkpointBlockY(int id);

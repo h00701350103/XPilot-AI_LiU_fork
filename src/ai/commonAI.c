@@ -1979,7 +1979,7 @@ double asteroidTrackingDeg(int id) {
 int phasingTime(void) {
   return phasingtimemax;
 }
-int getNextCheckPoint(void) {
+int getNextCheckpoint(void) {
   return nextCheckPoint;
 }
 int checkpointIdCheck(int id) {
