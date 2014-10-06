@@ -75,7 +75,9 @@ extern char		hostname[];		/* my local hostname */
 /*
  * just like fgets() but strips newlines like gets().
  */
-static char* getline(char* buf, int len, FILE* stream)
+//Due to recent changes to the standard, there is a built-in command
+//called getline. Therefore renaming the function to my_getline.
+static char* my_getline(char* buf, int len, FILE* stream)
 {
     char		*nl;
 
@@ -305,7 +307,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	else if (!auto_connect) {
 	    printf("*** Server on %s. Enter command> ", conpar->server_name);
 
-	    getline(linebuf, MAX_LINE-1, stdin);
+	    my_getline(linebuf, MAX_LINE-1, stdin);
 	    if (feof(stdin)) {
 		puts("");
 		c = 'Q';
@@ -385,7 +387,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'K':
 		printf("Enter name of victim: ");
 		fflush(stdout);
-		if (!getline(linebuf, MAX_LINE-1, stdin)) {
+		if (!my_getline(linebuf, MAX_LINE-1, stdin)) {
 		    printf("Nothing changed.\n");
 		    continue;
 		}
@@ -396,7 +398,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'R':
 		printf("Enter maximum number of robots: ");
 		fflush(stdout);
-		if (!getline(linebuf, MAX_LINE-1, stdin)) {
+		if (!my_getline(linebuf, MAX_LINE-1, stdin)) {
 		    printf("Nothing changed.\n");
 		    continue;
 		}
@@ -410,7 +412,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'M':				/* Send a message to server. */
 		printf("Enter message: ");
 		fflush(stdout);
-		if (!getline(linebuf, MAX_LINE-1, stdin) || !linebuf[0]) {
+		if (!my_getline(linebuf, MAX_LINE-1, stdin) || !linebuf[0]) {
 		    printf("No message sent.\n");
 		    continue;
 		}
@@ -425,7 +427,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'D':				/* Shutdown */
 		if (!auto_shutdown) {
 		    printf("Enter delay in seconds or return for cancel: ");
-		    getline(linebuf, MAX_LINE-1, stdin);
+		    my_getline(linebuf, MAX_LINE-1, stdin);
 		    /*
 		     * No argument = cancel shutdown = arg_int=0
 		     */
@@ -436,7 +438,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 			    delay = 1;
 
 		    printf("Enter reason: ");
-		    getline(linebuf, MAX_LINE-1, stdin);
+		    my_getline(linebuf, MAX_LINE-1, stdin);
 		} else {
 		    strlcpy(linebuf, shutdown_reason, sizeof(linebuf));
 		    delay = 60;
@@ -448,7 +450,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'O':				/* Tune an option. */
 		printf("Enter option: ");
 		fflush(stdout);
-		if (!getline(linebuf, MAX_LINE-1, stdin)
+		if (!my_getline(linebuf, MAX_LINE-1, stdin)
 		    || (len=strlen(linebuf)) == 0) {
 		    printf("Nothing changed.\n");
 		    continue;
@@ -456,7 +458,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 		printf("Enter new value for %s: ", linebuf);
 		fflush(stdout);
 		strcat(linebuf, ":"); len++;
-		if (!getline(&linebuf[len], MAX_LINE-1-len, stdin)
+		if (!my_getline(&linebuf[len], MAX_LINE-1-len, stdin)
 		    || linebuf[len] == '\0') {
 		    printf("Nothing changed.\n");
 		    continue;
@@ -516,7 +518,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 	    case 'T':				/* Set team. */
 		printf("Enter team: ");
 		fflush(stdout);
-		if (!getline(linebuf, MAX_LINE-1, stdin)
+		if (!my_getline(linebuf, MAX_LINE-1, stdin)
 		    || (len = strlen(linebuf)) == 0) {
 		    printf("Nothing changed.\n");
 		}
