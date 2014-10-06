@@ -144,6 +144,7 @@ double radarVelX(int id);
 double radarVelY(int id);
 int radarType(int id);
 int radarCount(void);
+double radarDist(int id);
 int radarHeight(void);
 int radarWidth(void);
 int itemCountScreen(void);

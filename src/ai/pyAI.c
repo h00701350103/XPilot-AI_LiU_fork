@@ -708,6 +708,18 @@ static PyObject* py_radarType(PyObject* pySelf, PyObject* args) {
   }
   return Py_BuildValue("i", radarType(id));
 }
+static PyObject* py_radarDist(PyObject* pySelf, PyObject* args) {
+  int id;
+  if (!PyArg_ParseTuple(args, "i", &id)) {
+    PyErr_SetString(PyExc_TypeError, "invalid parameter");
+    return NULL;
+  }
+  if (radarIdCheck(id) == 1) {
+    PyErr_SetString(PyExc_IndexError, "No radar object with that id");
+    return NULL;
+  }
+  return Py_BuildValue("i", radarDist(id));
+}
 static PyObject* py_radarCount(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",radarCount());
 }
@@ -2425,6 +2437,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"radarVelX", py_radarVelX,METH_VARARGS,"Returns the X velocity of the specified ship"},
     {"radarVelY", py_radarVelY,METH_VARARGS,"Returns the Y velocity of the specified ship"},
     {"radarType", py_radarType,METH_VARARGS,"Returns the type of the specified radar object"},
+    {"radarDist", py_radarDist,METH_VARARGS,"Returns the distance to the speciied radar object"},
     {"closestRadarId",py_closestRadarId,METH_NOARGS,"Returns the closest ship's radarId"},
     {"radarCount",py_radarCount,METH_NOARGS,"Returns the number of ships on the radar"},
     {"radarHeight",py_radarHeight,METH_NOARGS,"Returns the height of the radar"},

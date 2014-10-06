@@ -829,6 +829,12 @@ double radarVelY(int id) {
 int radarType(int id) {
   return newradar_ptr[id].size;
 }
+double radarDist(int id) {
+  int x, y;
+  x = AI_wrap(selfRadarX(), radarX(id), radarWidth());
+  y = AI_wrap(selfRadarY(), radarY(id), radarHeight());
+  return AI_distance(selfRadarX(), selfRadarY(), x, y);
+}
 int radarCount(void) {
   return num_newradar;
 }
