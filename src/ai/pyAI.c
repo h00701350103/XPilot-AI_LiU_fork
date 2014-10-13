@@ -1288,7 +1288,7 @@ static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  return Py_BuildValue("i",asteroidSpeed(idx));
+  return Py_BuildValue("d",asteroidSpeed(idx));
 }
 static PyObject* py_asteroidType(PyObject* pySelf, PyObject* args) {
   int idx;
