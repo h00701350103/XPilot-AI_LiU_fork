@@ -595,7 +595,7 @@ static PyObject* py_getTurnSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnSpeed());
 }
 static PyObject* py_getPower(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("d",getPower());
+  return Py_BuildValue("i",getPower());
 }
 static PyObject* py_getTurnResistance(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnResistance());
@@ -1276,7 +1276,7 @@ static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  return Py_BuildValue("i",asteroidDist(idx));
+  return Py_BuildValue("d",asteroidDist(idx));
 }
 static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
   int idx;
