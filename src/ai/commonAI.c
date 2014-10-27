@@ -633,10 +633,10 @@ double selfSpeed(void) {
 int lockHeadingXdeg(void) {
   return lock_dir;
 }
-int lockHeadingDeg(void) {
+double lockHeadingDeg(void) {
   return (double)lock_dir*2.8125;
 }
-int lockHeadingRad(void) {
+double lockHeadingRad(void) {
   return (double)lock_dir*.049087;
 }
 int selfLockDist(void) {
@@ -646,7 +646,7 @@ int selfReload(void) {
   return reload;
 }
 //Gets the player's ID, returns an int. -EGG
-int selfId() {
+int selfId(void) {
   if (self != NULL)
     return self->id;
   return -1;
@@ -712,13 +712,13 @@ int hudTimeLeft(int i) {
   return 0;
 }
 //Gets the player's turnspeed, returns a double. -EGG
-int getTurnSpeed(void) {
+double getTurnSpeed(void) {
   return turnspeed;
 }
-int getPower(void) {
+double getPower(void) {
   return power;
 }
-int getTurnResistance(void) {
+double getTurnResistance(void) {
   return turnresistance;
 }
 int selfShield(void) {
@@ -830,7 +830,7 @@ int radarType(int id) {
   return newradar_ptr[id].size;
 }
 double radarDist(int id) {
-  int x, y;
+  int x, y; //TODO: Redundancy. Move out of API?
   x = AI_wrap(selfRadarX(), radarX(id), radarWidth());
   y = AI_wrap(selfRadarY(), radarY(id), radarHeight());
   return AI_distance(selfRadarX(), selfRadarY(), x, y);
@@ -1010,7 +1010,7 @@ int playerTeam(int id) {
 char* playerName(int id) {
   return Others[id].name;
 }
-int playerScore(int id) {
+double playerScore(int id) {
   return Others[id].score;
 }
 //End idx functions. -JNE
@@ -1974,8 +1974,6 @@ double asteroidSpeed(int id) {
 double asteroidTrackingRad(int id) {
   double velX = asteroidVelX(id);
   double velY = asteroidVelY(id);
-  if (velX == 0 && velY == 0) //TODO: Needed?
-    return 0;
   return atan2(velY, velX);
 }
 double asteroidTrackingDeg(int id) {

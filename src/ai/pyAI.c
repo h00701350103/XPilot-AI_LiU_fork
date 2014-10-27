@@ -595,7 +595,7 @@ static PyObject* py_getTurnSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnSpeed());
 }
 static PyObject* py_getPower(PyObject* pySelf, PyObject* args) {
-  return Py_BuildValue("i",getPower());
+  return Py_BuildValue("d",getPower());
 }
 static PyObject* py_getTurnResistance(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",getTurnResistance());
@@ -718,7 +718,7 @@ static PyObject* py_radarDist(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No radar object with that id");
     return NULL;
   }
-  return Py_BuildValue("i", radarDist(id));
+  return Py_BuildValue("d", radarDist(id));
 }
 static PyObject* py_radarCount(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",radarCount());
@@ -1181,7 +1181,7 @@ static PyObject* py_shotSpeed(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  return Py_BuildValue("i",shotSpeed(idx));
+  return Py_BuildValue("d",shotSpeed(idx));
 }
 static PyObject* py_shotTrackingRad(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1193,11 +1193,7 @@ static PyObject* py_shotTrackingRad(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  if (shotIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",shotTrackingRad(idx));
+  return Py_BuildValue("d",shotTrackingRad(idx));
 }
 static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1209,11 +1205,7 @@ static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No shot with that id");
     return NULL;
   }
-  if (shotIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That shot is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",shotTrackingDeg(idx));
+  return Py_BuildValue("d",shotTrackingDeg(idx));
 }
 static PyObject* py_asteroidCountScreen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidCountScreen());
@@ -1324,11 +1316,7 @@ static PyObject* py_asteroidTrackingRad(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  if (asteroidIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",asteroidTrackingRad(idx));
+  return Py_BuildValue("d",asteroidTrackingRad(idx));
 }
 static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1340,11 +1328,7 @@ static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
     return NULL;
   }
-  if (asteroidIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
-    return NULL;
-  }
-  return Py_BuildValue("i",asteroidTrackingDeg(idx));
+  return Py_BuildValue("d",asteroidTrackingDeg(idx));
 }
 static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
   int idx;
@@ -1354,10 +1338,6 @@ static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
   }
   if (asteroidIdCheck(idx) == 1) {
     PyErr_SetString(PyExc_IndexError, "No asteroid with that id");
-    return NULL;
-  }
-  if (asteroidIdCheck(idx) == 2) {
-    PyErr_SetString(PyExc_ValueError, "That asteroid is still fresh");
     return NULL;
   }
   return Py_BuildValue("i",asteroidRotation(idx));
