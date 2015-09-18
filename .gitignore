@@ -6,3 +6,15 @@ xxpilots
 *.ncb
 *.opt
 gmon.out
+*.o
+*~
+*.bak
+*.so
+*._man
+*.a
+xpilot
+xpilots
+xp-mapedit
+xp-replay
+msub
+
