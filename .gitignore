@@ -4,7 +4,6 @@ README
 xmkmf
 xxpilots
 *.ncb
-*.opt
 gmon.out
 *.o
 *~
