@@ -1,26 +1,40 @@
 #include <Python.h>
 #include "commonAI.h"
+#include "const.h" // to be able to include ../common/setup.h
+#include "../common/setup.h" // Access to Setup for checking if connected
 #define commonAI_H_INCLUDED
+
+#define only_available_if_connected \
+if (!Setup) { \
+  PyErr_SetString(PyExc_RuntimeError, "unavailable prior to connecting to server"); \
+  return NULL; \
+}
+
 static PyObject* py_loop = NULL;
 static PyObject* py_getLag(PyObject* pySelf, PyObject* args)
 {
+  only_available_if_connected
   return Py_BuildValue("i", getLag());
 }
 static PyObject* py_turnLeft(PyObject* pySelf, PyObject* args) {  //turns left as if the 'a' key was pressed -JNE
+  only_available_if_connected
   turnLeft();
   Py_RETURN_NONE;
 }
 static PyObject* py_turnRight(PyObject* pySelf, PyObject*args) { //turns right as if the 's' key was pressed -JNE
+  only_available_if_connected
   turnRight();
   Py_RETURN_NONE;
 }
 void turnResistanceCheck(void) {
+  only_available_if_connected
   if (getTurnResistance() != 0) {
     printf("WARNING: turnResistance != 0\n");
   }
 }
 static PyObject* py_turnXdeg(PyObject* pySelf, PyObject* args)
 {
+  only_available_if_connected
   double xdeg;
   if (!PyArg_ParseTuple(args, "d", &xdeg))
   {
@@ -33,6 +47,7 @@ static PyObject* py_turnXdeg(PyObject* pySelf, PyObject* args)
 }
 static PyObject* py_turnToXdeg(PyObject* pySelf, PyObject* args)
 {
+  only_available_if_connected
   double xdeg;
   if (!PyArg_ParseTuple(args, "d", &xdeg))
   {
@@ -44,6 +59,7 @@ static PyObject* py_turnToXdeg(PyObject* pySelf, PyObject* args)
   Py_RETURN_NONE;
 }
 static PyObject* py_turnDeg(PyObject* pySelf, PyObject* args) { //turns based on the speed, 'deg', that is passed in -JNE
+  only_available_if_connected
   double deg;
   if (!PyArg_ParseTuple(args, "d", &deg)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -54,6 +70,7 @@ static PyObject* py_turnDeg(PyObject* pySelf, PyObject* args) { //turns based on
   Py_RETURN_NONE;
 }
 static PyObject* py_turnToDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   //sets the ship's heading to a fixed degree -JNE
   //rewritten to be instant
   double deg;
@@ -67,6 +84,7 @@ static PyObject* py_turnToDeg(PyObject* pySelf, PyObject* args) {
 }
 static PyObject* py_turnRad(PyObject* pySelf, PyObject* args)
 {
+  only_available_if_connected
   double rad;
   if (!PyArg_ParseTuple(args, "d", &rad)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -77,6 +95,7 @@ static PyObject* py_turnRad(PyObject* pySelf, PyObject* args)
   Py_RETURN_NONE;
 }
 static PyObject* py_turnToRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   //sets the ship's heading to a fixed degree -JNE
   //rewritten to be instant
   double rad;
@@ -143,6 +162,7 @@ static PyObject* py_getMaxTurnRad(PyObject* pySelf, PyObject* args)
   return Py_BuildValue("d", getMaxTurnRad());
 }
 static PyObject* py_thrust(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   thrust();
   Py_RETURN_NONE;
 }
@@ -159,6 +179,7 @@ static PyObject* py_setTurnSpeed(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_setPower(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double s;
   if (!PyArg_ParseTuple(args, "d", &s)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -171,6 +192,7 @@ static PyObject* py_setPower(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_setTurnResistance(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double s;
   if (!PyArg_ParseTuple(args, "d", &s)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -183,123 +205,153 @@ static PyObject* py_setTurnResistance(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_fireShot(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   fireShot();
   Py_RETURN_NONE;
 }
 static PyObject* py_fireMissile(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   fireMissile();
   Py_RETURN_NONE;
 }
 static PyObject* py_fireTorpedo(PyObject* pySelf, PyObject* args) { 
+  only_available_if_connected
   fireTorpedo();
   Py_RETURN_NONE;
 }
 static PyObject* py_fireHeat(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   fireHeat();
   Py_RETURN_NONE;
 }
 static PyObject* py_dropMine(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   dropMine();
   Py_RETURN_NONE;
 }
 static PyObject* py_detachMine(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   detachMine();
   Py_RETURN_NONE;
 }
 static PyObject* py_detonateMines(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   detonateMines();
   Py_RETURN_NONE;
 }
 static PyObject* py_fireLaser(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   fireLaser();
   Py_RETURN_NONE;
 }
 static PyObject* py_tankDetach(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   tankDetach();
   Py_RETURN_NONE;
 }
 static PyObject* py_cloak(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   cloak();
   Py_RETURN_NONE;
 }
 static PyObject* py_ecm(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   ecm();
   Py_RETURN_NONE;
 }
 static PyObject* py_transporter(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   transporter();
   Py_RETURN_NONE;
 }
 static PyObject* py_tractorBeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   tractorBeam();
   Py_RETURN_NONE;
 }
 static PyObject* py_pressorBeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   pressorBeam();
   Py_RETURN_NONE;
 }
 static PyObject* py_phasing(PyObject* pySelf, PyObject* args){
+  only_available_if_connected
   phasing();
   Py_RETURN_NONE;
 }
 static PyObject* py_shield(PyObject* pySelf, PyObject* args)
 {
+  only_available_if_connected
   shield();
   Py_RETURN_NONE;
 }
 static PyObject* py_emergencyShield(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   emergencyShield();
   Py_RETURN_NONE;
 }
 static PyObject* py_hyperjump(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   hyperjump();
   Py_RETURN_NONE;
 }
 static PyObject* py_nextTank(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   nextTank();
   Py_RETURN_NONE;
 }
 static PyObject* py_prevTank(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   prevTank();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleAutopilot(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleAutopilot();
   Py_RETURN_NONE;
 }
 static PyObject* py_emergencyThrust(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   emergencyThrust();
   Py_RETURN_NONE;
 }
 static PyObject* py_deflector(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   deflector();
   Py_RETURN_NONE;
 }
 static PyObject* py_selectItem(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   selectItem();
   Py_RETURN_NONE;
 }
 static PyObject* py_loseItem(PyObject* pySelf, PyObject* args) { 
+  only_available_if_connected
   loseItem();
   Py_RETURN_NONE;
 }
 static PyObject* py_lockNext(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   lockNext();
   Py_RETURN_NONE;
 }
 static PyObject* py_lockPrev(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   lockPrev();
   Py_RETURN_NONE;
 }
 static PyObject* py_lockClose(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   lockClose();
   Py_RETURN_NONE;
 }
 static PyObject* py_lockNextClose(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   lockNextClose();
   Py_RETURN_NONE;
 }
 static PyObject* py_loadLock(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int lock;
   if (!PyArg_ParseTuple(args, "i", &lock)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -312,6 +364,7 @@ static PyObject* py_loadLock(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_saveLock(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int lock;
   if (!PyArg_ParseTuple(args, "i", &lock)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -324,101 +377,126 @@ static PyObject* py_saveLock(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_getLockId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", getLockId());
 }
 static PyObject* py_toggleNuclear(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleNuclear();
   Py_RETURN_NONE;
 }
 static PyObject* py_togglePower(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   togglePower();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleVelocity(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleVelocity();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleCluster(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleCluster();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleMini(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleMini();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleSpread(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleSpread();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleLaser(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleLaser();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleImplosion(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleImplosion();
   Py_RETURN_NONE;
 }
 static PyObject* py_toggleUserName(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleUserName();
   Py_RETURN_NONE;
 }
 static PyObject* py_clearModifiers(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   clearModifiers();
   Py_RETURN_NONE;
 }
 static PyObject* py_connector(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   connector();
   Py_RETURN_NONE;
 }
 static PyObject* py_dropBall(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   dropBall();
   Py_RETURN_NONE;
 }
 static PyObject* py_refuel(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   refuel();
   Py_RETURN_NONE;
 }
 static PyObject* py_keyHome(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   keyHome();
   Py_RETURN_NONE;
 }
 static PyObject* py_selfDestruct(PyObject* pySelf, PyObject* args) { //TODO: See comment further down
+  only_available_if_connected
   selfDestruct();
   Py_RETURN_NONE;
 }
 static PyObject* py_pauseAI(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   pauseAI();
   Py_RETURN_NONE;
 }
 static PyObject* py_swapSettings(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   swapSettings();
   Py_RETURN_NONE;
 }
 static PyObject* py_talkKey(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   talkKey();
   Py_RETURN_NONE;    
 }
 static PyObject* py_toggleShowMessage(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleShowMessage();
   Py_RETURN_NONE;    
 }
 static PyObject* py_toggleShowItems(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleShowItems();
   Py_RETURN_NONE;    
 }
 static PyObject* py_toggleCompass(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   toggleCompass();
   Py_RETURN_NONE;
 }
 static PyObject* py_repair(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   repair();
   Py_RETURN_NONE;
 }
 static PyObject* py_reprogram(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   reprogram();
   Py_RETURN_NONE;
 }
 static PyObject* py_loadModifiers(PyObject* pySelf, PyObject* args) {//TODO: Use Send_modifier_bank
+  only_available_if_connected
   int index;
   if (!PyArg_ParseTuple(args, "i", &index)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -431,6 +509,7 @@ static PyObject* py_loadModifiers(PyObject* pySelf, PyObject* args) {//TODO: Use
   Py_RETURN_NONE;
 }
 static PyObject* py_saveModifiers(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int index;
   if (!PyArg_ParseTuple(args, "i", &index)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -447,9 +526,11 @@ static PyObject* py_quitAI(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_getMaxMsgs(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", getMaxMsgs());
 }
 static PyObject* py_setMaxMsgs(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int var;
   if (!PyArg_ParseTuple(args, "i", &var)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -461,6 +542,7 @@ static PyObject* py_setMaxMsgs(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_talk(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   char* talk_str;
   if (!PyArg_ParseTuple(args, "s", &talk_str)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -470,6 +552,7 @@ static PyObject* py_talk(PyObject* pySelf, PyObject* args) {
   Py_RETURN_NONE;
 }
 static PyObject* py_scanTalkMsg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -478,6 +561,7 @@ static PyObject* py_scanTalkMsg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("s",scanTalkMsg(id));
 }
 static PyObject* py_removeTalkMsg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -490,6 +574,7 @@ static PyObject* py_removeTalkMsg(PyObject* pySelf, PyObject* args) {
   return NULL;
 }
 static PyObject* py_scanGameMsg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -498,6 +583,7 @@ static PyObject* py_scanGameMsg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("s",scanTalkMsg(id));
 }
 static PyObject* py_removeGameMsg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -510,64 +596,84 @@ static PyObject* py_removeGameMsg(PyObject* pySelf, PyObject* args) {
   return NULL;
 }
 static PyObject* py_selfX(PyObject* pySelf, PyObject* args) {       //returns the player's x position
+  only_available_if_connected
   return Py_BuildValue("i",selfX());
 }
 static PyObject* py_selfY(PyObject* pySelf, PyObject* args) {       //returns the player's y position
+  only_available_if_connected
   return Py_BuildValue("i",selfY());
 }
 static PyObject* py_selfVelX(PyObject* pySelf, PyObject* args) {    //returns the player's x velocity
+  only_available_if_connected
   return Py_BuildValue("d",selfVelX());
 }
 static PyObject* py_selfVelY(PyObject* pySelf, PyObject* args) {    //returns the player's y velocity
+  only_available_if_connected
   return Py_BuildValue("d",selfVelY());
 }
 static PyObject* py_selfSpeed(PyObject* pySelf, PyObject* args) {   //returns speed of the player's ship
+  only_available_if_connected
   return Py_BuildValue("d",selfSpeed());
 }
 static PyObject* py_lockHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",lockHeadingXdeg());
 }
 static PyObject* py_lockHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns the angle at which the player's lock is in relation to the player's ship -JNE
+  only_available_if_connected
   return Py_BuildValue("d",lockHeadingDeg());
 }
 static PyObject* py_lockHeadingRad(PyObject* pySelf, PyObject* args) {   //returns the angle at which the player's lock is in relation to the player's ship -JNE
+  only_available_if_connected
   return Py_BuildValue("d",lockHeadingRad());
 }
 static PyObject* py_selfLockDist(PyObject* pySelf, PyObject* args) {      //returns the distance of the ship the player is locked onto -JNE
+  only_available_if_connected
   return Py_BuildValue("i",selfLockDist()); 
 }
 static PyObject* py_selfReload(PyObject* pySelf, PyObject* args) {    //returns the player's reload time remaining
+  only_available_if_connected
   return Py_BuildValue("i",selfReload());
 }
 static PyObject* py_selfId(PyObject* pySelf, PyObject* args) { 
+  only_available_if_connected
   return Py_BuildValue("i",selfId());
 }
 static PyObject* py_selfAlive(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfAlive());
 }
 static PyObject* py_selfTeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfTeam());
 }
 static PyObject* py_selfLives(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfLives());
 }
 static PyObject* py_selfTrackingRad(PyObject* pySelf, PyObject* args) {  //returns the player's tracking in radians -JNE
+  only_available_if_connected
   return Py_BuildValue("d",selfTrackingRad());
 }
 static PyObject* py_selfTrackingDeg(PyObject* pySelf, PyObject* args) {  //returns the player's tracking in degrees -JNE
+  only_available_if_connected
   //if (vel.y == 0 && vel.x == 0) return Py_BuildValue("d",(double)selfHeadingDeg()); //fix for NaN -EGG -CJG   
   return Py_BuildValue("d",selfTrackingDeg());
 }
 static PyObject* py_selfHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns the player's heading in degrees  -JNE
+  only_available_if_connected
   return Py_BuildValue("d",selfHeadingDeg());
 }
 static PyObject* py_selfHeadingRad(PyObject* pySelf, PyObject* args) {   //returns the player's heading in radians  -JNE
+  only_available_if_connected
   return Py_BuildValue("d",selfHeadingRad());
 }
 static PyObject* py_selfHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfHeading());
 }
 static PyObject* py_hud(PyObject* pySelf, PyObject* args) {         //if the HUD is displaying a name, return it  -JNE
+  only_available_if_connected
   int i; 
   if (!PyArg_ParseTuple(args, "i", &i)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -576,6 +682,7 @@ static PyObject* py_hud(PyObject* pySelf, PyObject* args) {         //if the HUD
   return Py_BuildValue("s",hud(i));
 }
 static PyObject* py_hudScore(PyObject* pySelf, PyObject* args) {        //if the HUD is displaying a score, return it -JNE
+  only_available_if_connected
   int i;
   if (!PyArg_ParseTuple(args, "i", &i)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -584,6 +691,7 @@ static PyObject* py_hudScore(PyObject* pySelf, PyObject* args) {        //if the
   return Py_BuildValue("s",hudScore(i));
 }
 static PyObject* py_hudTimeLeft(PyObject* pySelf, PyObject* args) {      //returns how much time the HUD will keep displaying a score for, in seconds -JNE
+  only_available_if_connected
   int i;
   if (!PyArg_ParseTuple(args, "i", &i)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -592,27 +700,34 @@ static PyObject* py_hudTimeLeft(PyObject* pySelf, PyObject* args) {      //retur
   return Py_BuildValue("i",hudTimeLeft(i));
 }
 static PyObject* py_getTurnSpeed(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("d",getTurnSpeed());
 }
 static PyObject* py_getPower(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("d",getPower());
 }
 static PyObject* py_getTurnResistance(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("d",getTurnResistance());
 }
 //Returns 1 if the player's shield is on, 0 if it is not, -1 if player is not alive. -EGG
 static PyObject* py_selfShield(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfShield());
 }
 //Returns the player's username (string). -EGG
 static PyObject* py_selfName(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("s",selfName());
 }
 //Returns the player's score (double). -EGG
 static PyObject* py_selfScore(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("d",selfScore());
 }
 static PyObject* py_selfItem(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int i, result;
   if (!PyArg_ParseTuple(args, "i", &i)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -628,27 +743,35 @@ static PyObject* py_selfItem(PyObject* pySelf, PyObject* args) {
   }
 }
 static PyObject* py_selfFuel(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfFuel());
 }
 static PyObject* py_selfFuelMax(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfFuelMax());
 }
 static PyObject* py_selfFuelCurrent(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",selfFuelCurrent());
 }
 static PyObject* py_selfMass(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("d", selfMass());
 }
 static PyObject* py_closestRadarId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", closestRadarId());
 }
 static PyObject* py_selfRadarX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", selfRadarX());
 }
 static PyObject* py_selfRadarY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", selfRadarY());
 }
 static PyObject* py_radarX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -661,6 +784,7 @@ static PyObject* py_radarX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", radarX(id));
 }
 static PyObject* py_radarY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -673,6 +797,7 @@ static PyObject* py_radarY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", radarY(id));
 }
 static PyObject* py_radarVelX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -685,6 +810,7 @@ static PyObject* py_radarVelX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d", radarVelX(id));
 }
 static PyObject* py_radarVelY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -697,6 +823,7 @@ static PyObject* py_radarVelY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d", radarVelY(id));
 }
 static PyObject* py_radarType(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -709,6 +836,7 @@ static PyObject* py_radarType(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", radarType(id));
 }
 static PyObject* py_radarDist(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -721,27 +849,35 @@ static PyObject* py_radarDist(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d", radarDist(id));
 }
 static PyObject* py_radarCount(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",radarCount());
 }
 static PyObject* py_radarHeight(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",radarHeight());
 }
 static PyObject* py_radarWidth(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",radarWidth());
 }
 static PyObject* py_playerCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",playerCountServer());
 }
 static PyObject* py_pausedCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",pausedCountServer());
 }
 static PyObject* py_tankCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",tankCountServer());
 }
 static PyObject* py_shipCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i", shipCountScreen());
 }
 static PyObject* py_shipId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -750,6 +886,7 @@ static PyObject* py_shipId(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", shipId(idx));
 }
 static PyObject* py_shipX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of ship at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -762,6 +899,7 @@ static PyObject* py_shipX(PyObject* pySelf, PyObject* args) {    //returns x coo
   return Py_BuildValue("i",shipX(idx));
 }
 static PyObject* py_shipY(PyObject* pySelf, PyObject* args) {    //returns y coordinate of ship at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -774,6 +912,7 @@ static PyObject* py_shipY(PyObject* pySelf, PyObject* args) {    //returns y coo
   return Py_BuildValue("i",shipY(idx));
 }
 static PyObject* py_shipDistance(PyObject* pySelf, PyObject* args) { //returns the distance of a ship with a particular index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -786,6 +925,7 @@ static PyObject* py_shipDistance(PyObject* pySelf, PyObject* args) { //returns t
   return Py_BuildValue("d",shipDistance(idx));
 }
 static PyObject* py_shipVelX(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -798,6 +938,7 @@ static PyObject* py_shipVelX(PyObject* pySelf, PyObject* args) { //returns veloc
   return Py_BuildValue("d",shipVelX(idx));
 }
 static PyObject* py_shipVelY(PyObject* pySelf, PyObject* args) { //returns velocity of a ship with a particular index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -810,6 +951,7 @@ static PyObject* py_shipVelY(PyObject* pySelf, PyObject* args) { //returns veloc
   return Py_BuildValue("d",shipVelY(idx));
 }
 static PyObject* py_shipSpeed(PyObject* pySelf, PyObject* args) {  //returns velocity of a ship with a particular index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -822,6 +964,7 @@ static PyObject* py_shipSpeed(PyObject* pySelf, PyObject* args) {  //returns vel
   return Py_BuildValue("d",shipSpeed(idx));
 }
 static PyObject* py_shipTrackingRad(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -834,6 +977,7 @@ static PyObject* py_shipTrackingRad(PyObject* pySelf, PyObject* args) {  //retur
   return Py_BuildValue("d",shipTrackingRad(idx));
 }
 static PyObject* py_shipTrackingDeg(PyObject* pySelf, PyObject* args) {  //returns tracking based on index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -846,6 +990,7 @@ static PyObject* py_shipTrackingDeg(PyObject* pySelf, PyObject* args) {  //retur
   return Py_BuildValue("d",shipTrackingDeg(idx));
 }
 static PyObject* py_shipHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -858,6 +1003,7 @@ static PyObject* py_shipHeadingXdeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",shipHeadingXdeg(idx));
 }
 static PyObject* py_shipHeadingDeg(PyObject* pySelf, PyObject* args) {   //returns heading in degrees of ship at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -870,6 +1016,7 @@ static PyObject* py_shipHeadingDeg(PyObject* pySelf, PyObject* args) {   //retur
   return Py_BuildValue("d",shipHeadingDeg(idx));
 }
 static PyObject* py_shipHeadingRad(PyObject* pySelf, PyObject* args) {   //returns heading in radians of ship at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -882,6 +1029,7 @@ static PyObject* py_shipHeadingRad(PyObject* pySelf, PyObject* args) {   //retur
   return Py_BuildValue("d",shipHeadingRad(idx));
 }
 static PyObject* py_shipShield(PyObject* pySelf, PyObject* args) {   //returns shield status of ship at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -894,6 +1042,7 @@ static PyObject* py_shipShield(PyObject* pySelf, PyObject* args) {   //returns s
   return Py_BuildValue("i",shipShield(idx));
 }
 static PyObject* py_playerId(PyObject* pySelf, PyObject* args) {    //returns lives of player at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -906,6 +1055,7 @@ static PyObject* py_playerId(PyObject* pySelf, PyObject* args) {    //returns li
   return Py_BuildValue("i",playerId(idx));
 }
 static PyObject* py_playerLives(PyObject* pySelf, PyObject* args) {    //returns lives of player at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -918,6 +1068,7 @@ static PyObject* py_playerLives(PyObject* pySelf, PyObject* args) {    //returns
   return Py_BuildValue("i",playerLives(idx));
 }
 static PyObject* py_playerTeam(PyObject* pySelf, PyObject* args) { //returns team of player at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -930,6 +1081,7 @@ static PyObject* py_playerTeam(PyObject* pySelf, PyObject* args) { //returns tea
   return Py_BuildValue("i",playerTeam(idx));
 }
 static PyObject* py_playerName(PyObject* pySelf, PyObject* args) {   //returns name of player at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -942,6 +1094,7 @@ static PyObject* py_playerName(PyObject* pySelf, PyObject* args) {   //returns n
   return Py_BuildValue("s",playerName(idx));
 }
 static PyObject* py_playerScore(PyObject* pySelf, PyObject* args) {    //returns score of player at an index -JNE
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -954,6 +1107,7 @@ static PyObject* py_playerScore(PyObject* pySelf, PyObject* args) {    //returns
   return Py_BuildValue("d",playerScore(idx));
 }
 static PyObject* py_xdegToDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double xdeg;
   if (!PyArg_ParseTuple(args, "d", &xdeg)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -962,6 +1116,7 @@ static PyObject* py_xdegToDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",AI_xdegToDeg(xdeg));
 }
 static PyObject* py_xdegToRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double xdeg;
   if (!PyArg_ParseTuple(args, "d", &xdeg)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -970,6 +1125,7 @@ static PyObject* py_xdegToRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",AI_xdegToRad(xdeg));
 }
 static PyObject* py_degToXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double deg;
   if (!PyArg_ParseTuple(args, "d", &deg)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -978,6 +1134,7 @@ static PyObject* py_degToXdeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",AI_degToXdeg(deg));
 }
 static PyObject* py_degToRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double deg;
   if (!PyArg_ParseTuple(args, "d", &deg)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -986,6 +1143,7 @@ static PyObject* py_degToRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",AI_degToRad(deg));
 }
 static PyObject* py_radToXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double rad;
   if (!PyArg_ParseTuple(args, "d", &rad)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -995,6 +1153,7 @@ static PyObject* py_radToXdeg(PyObject* pySelf, PyObject* args) {
 }
 //Converts radians (double) to degrees (double). -EGG -hatten
 static PyObject* py_radToDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double rad;
   if (!PyArg_ParseTuple(args, "d", &rad)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1003,6 +1162,7 @@ static PyObject* py_radToDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",AI_radToDeg(rad));
 }
 static PyObject* py_wallFeelerDeg(PyObject* pySelf, PyObject* args) { //removed flags -CJG
+  only_available_if_connected
   double dist, angle;
   if (!PyArg_ParseTuple(args, "dd", &dist, &angle)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1011,6 +1171,7 @@ static PyObject* py_wallFeelerDeg(PyObject* pySelf, PyObject* args) { //removed 
   return Py_BuildValue("d",wallFeelerDeg(dist, angle));
 }
 static PyObject* py_wallFeelerRad(PyObject* pySelf, PyObject* args) { //removed flags -CJG
+  only_available_if_connected
   double dist, angle;
   if (!PyArg_ParseTuple(args, "dd", &dist, &angle)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1022,18 +1183,23 @@ static PyObject* py_blockSize(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",blockSize());
 }
 static PyObject* py_mapWidthBlocks(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",mapWidthBlocks());
 }
 static PyObject* py_mapHeightBlocks(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",mapHeightBlocks());
 }
 static PyObject* py_mapWidthPixels(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",mapWidthPixels());
 }
 static PyObject* py_mapHeightPixels(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",mapHeightPixels());
 }
 static PyObject* py_mapData(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int x,y;
   if (!PyArg_ParseTuple(args, "ii", &x, &y)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1042,6 +1208,7 @@ static PyObject* py_mapData(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mapData(x, y));
 }
 static PyObject* py_getOption(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   char *name[64];
   int result, i;
   if (!PyArg_ParseTuple(args, "s", &name)){
@@ -1085,6 +1252,7 @@ static PyObject* py_getOption(PyObject* pySelf, PyObject* args) {
   }
 }
 static PyObject* py_wallBetween(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   double x1, y1, x2, y2;
   if (!PyArg_ParseTuple(args, "dddd", &x1, &y1, &x2, &y2)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1097,9 +1265,11 @@ static PyObject* py_wallBetween(PyObject* pySelf, PyObject* args) {
     return Py_BuildValue("d", result);
 }
 static PyObject* py_shotCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",shotCountScreen());
 }
 static PyObject* py_shotX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1112,6 +1282,7 @@ static PyObject* py_shotX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",shotX(idx));
 }
 static PyObject* py_shotY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1124,6 +1295,7 @@ static PyObject* py_shotY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",shotY(idx));
 }
 static PyObject* py_shotVelX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1136,6 +1308,7 @@ static PyObject* py_shotVelX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotVelX(idx));
 }
 static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1148,6 +1321,7 @@ static PyObject* py_shotVelY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotVelY(idx));
 }
 static PyObject* py_shotFriendly(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1160,6 +1334,7 @@ static PyObject* py_shotFriendly(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",shotFriendly(idx));
 }
 static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1172,6 +1347,7 @@ static PyObject* py_shotDist(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotDist(idx));
 }
 static PyObject* py_shotSpeed(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1184,6 +1360,7 @@ static PyObject* py_shotSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotSpeed(idx));
 }
 static PyObject* py_shotTrackingRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1196,6 +1373,7 @@ static PyObject* py_shotTrackingRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotTrackingRad(idx));
 }
 static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1208,9 +1386,11 @@ static PyObject* py_shotTrackingDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",shotTrackingDeg(idx));
 }
 static PyObject* py_asteroidCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",asteroidCountScreen());
 }
 static PyObject* py_asteroidX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1223,6 +1403,7 @@ static PyObject* py_asteroidX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidX(idx));
 }
 static PyObject* py_asteroidY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1235,6 +1416,7 @@ static PyObject* py_asteroidY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidY(idx));
 }
 static PyObject* py_asteroidVelX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1247,6 +1429,7 @@ static PyObject* py_asteroidVelX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidVelX(idx));
 }
 static PyObject* py_asteroidVelY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1259,6 +1442,7 @@ static PyObject* py_asteroidVelY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidVelY(idx));
 }
 static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1271,6 +1455,7 @@ static PyObject* py_asteroidDist(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidDist(idx));
 }
 static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1283,6 +1468,7 @@ static PyObject* py_asteroidSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidSpeed(idx));
 }
 static PyObject* py_asteroidType(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1295,6 +1481,7 @@ static PyObject* py_asteroidType(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidType(idx));
 }
 static PyObject* py_asteroidSize(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1307,6 +1494,7 @@ static PyObject* py_asteroidSize(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",asteroidSize(idx));
 }
 static PyObject* py_asteroidTrackingRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1319,6 +1507,7 @@ static PyObject* py_asteroidTrackingRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidTrackingRad(idx));
 }
 static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1331,6 +1520,7 @@ static PyObject* py_asteroidTrackingDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",asteroidTrackingDeg(idx));
 }
 static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1344,12 +1534,15 @@ static PyObject* py_asteroidRotation(PyObject* pySelf, PyObject* args) {
 }
 
 static PyObject* py_phasingTime(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",phasingTime());
 }
 static PyObject* py_nextCheckpoint(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",getNextCheckpoint());
 }
 static PyObject* py_checkpointX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1362,6 +1555,7 @@ static PyObject* py_checkpointX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", checkpointX(id));
 }
 static PyObject* py_checkpointY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1374,6 +1568,7 @@ static PyObject* py_checkpointY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", checkpointY(id));
 }
 static PyObject* py_checkpointBlockX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1386,6 +1581,7 @@ static PyObject* py_checkpointBlockX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", checkpointBlockX(id));
 }
 static PyObject* py_checkpointBlockY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1398,9 +1594,11 @@ static PyObject* py_checkpointBlockY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i", checkpointBlockY(id));
 }
 static PyObject* py_connectorCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",connectorCountScreen());
 }
 static PyObject* py_connectorX0(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1413,6 +1611,7 @@ static PyObject* py_connectorX0(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",connectorX0(id));
 }
 static PyObject* py_connectorY0(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1425,6 +1624,7 @@ static PyObject* py_connectorY0(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",connectorY0(id));
 }
 static PyObject* py_connectorX1(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1437,6 +1637,7 @@ static PyObject* py_connectorX1(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",connectorX1(id));
 }
 static PyObject* py_connectorY1(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1449,6 +1650,7 @@ static PyObject* py_connectorY1(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",connectorY1(id));
 }
 static PyObject* py_connectorTractor(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1461,9 +1663,11 @@ static PyObject* py_connectorTractor(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",connectorTractor(id));
 }
 static PyObject* py_missileCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",missileCountScreen());
 }
 static PyObject* py_missileX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1476,6 +1680,7 @@ static PyObject* py_missileX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileX(id));
 }
 static PyObject* py_missileY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1488,6 +1693,7 @@ static PyObject* py_missileY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileY(id));
 }
 static PyObject* py_missileLen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1500,6 +1706,7 @@ static PyObject* py_missileLen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileLen(id));
 }
 static PyObject* py_missileHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1512,6 +1719,7 @@ static PyObject* py_missileHeadingXdeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileHeadingXdeg(id));
 }
 static PyObject* py_missileHeadingDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1524,6 +1732,7 @@ static PyObject* py_missileHeadingDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileHeadingDeg(id));
 }
 static PyObject* py_missileHeadingRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1536,9 +1745,11 @@ static PyObject* py_missileHeadingRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",missileHeadingRad(id));
 }
 static PyObject* py_laserCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",laserCountScreen());
 }
 static PyObject* py_laserX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1551,6 +1762,7 @@ static PyObject* py_laserX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserX(id));
 }
 static PyObject* py_laserY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1563,6 +1775,7 @@ static PyObject* py_laserY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserY(id));
 }
 static PyObject* py_laserLen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1575,6 +1788,7 @@ static PyObject* py_laserLen(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserLen(id));
 }
 static PyObject* py_laserHeadingXdeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1587,6 +1801,7 @@ static PyObject* py_laserHeadingXdeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserHeadingXdeg(id));
 }
 static PyObject* py_laserHeadingDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1599,6 +1814,7 @@ static PyObject* py_laserHeadingDeg(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserHeadingDeg(id));
 }
 static PyObject* py_laserHeadingRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1611,9 +1827,11 @@ static PyObject* py_laserHeadingRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",laserHeadingRad(id));
 }
 static PyObject* py_ballCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",ballCountScreen());
 }
 static PyObject* py_ballX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1626,6 +1844,7 @@ static PyObject* py_ballX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ballX(id));
 }
 static PyObject* py_ballY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1638,6 +1857,7 @@ static PyObject* py_ballY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ballY(id));
 }
 static PyObject* py_ballId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1650,9 +1870,11 @@ static PyObject* py_ballId(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ballId(id));
 }
 static PyObject* py_mineCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",mineCountScreen());
 }
 static PyObject* py_mineX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1665,6 +1887,7 @@ static PyObject* py_mineX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mineX(id));
 }
 static PyObject* py_mineY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1677,6 +1900,7 @@ static PyObject* py_mineY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mineY(id));
 }
 static PyObject* py_mineFriendly(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1689,6 +1913,7 @@ static PyObject* py_mineFriendly(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mineFriendly(id));
 }
 static PyObject* py_mineId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1701,9 +1926,11 @@ static PyObject* py_mineId(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",mineId(id));
 }
 static PyObject* py_wormholeCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",wormholeCountScreen());
 }
 static PyObject* py_wormholeX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1716,6 +1943,7 @@ static PyObject* py_wormholeX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",wormholeX(id));
 }
 static PyObject* py_wormholeY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1728,9 +1956,11 @@ static PyObject* py_wormholeY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",wormholeY(id));
 }
 static PyObject* py_ecmCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",ecmCountScreen());
 }
 static PyObject* py_ecmX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1743,6 +1973,7 @@ static PyObject* py_ecmX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ecmX(id));
 }
 static PyObject* py_ecmY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1755,12 +1986,15 @@ static PyObject* py_ecmY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",ecmY(id));
 }
 static PyObject* py_timeLeftSec(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",timeLeftSec());
 }
 static PyObject* py_fuelstationCount(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",fuelstationCount());
 }
 static PyObject* py_fuelstationX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1773,6 +2007,7 @@ static PyObject* py_fuelstationX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationX(id));
 }
 static PyObject* py_fuelstationY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1785,6 +2020,7 @@ static PyObject* py_fuelstationY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationY(id));
 }
 static PyObject* py_fuelstationBlockX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1797,6 +2033,7 @@ static PyObject* py_fuelstationBlockX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationBlockX(id));
 }
 static PyObject* py_fuelstationBlockY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1809,6 +2046,7 @@ static PyObject* py_fuelstationBlockY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationBlockY(id));
 }
 static PyObject* py_fuelstationFuel(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1821,6 +2059,7 @@ static PyObject* py_fuelstationFuel(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationFuel(id));
 }
 static PyObject* py_fuelstationTeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1837,9 +2076,11 @@ static PyObject* py_fuelstationTeam(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",fuelstationTeam(id));
 }
 static PyObject* py_cannonCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",cannonCountServer());
 }
 static PyObject* py_cannonX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1852,6 +2093,7 @@ static PyObject* py_cannonX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonX(id));
 }
 static PyObject* py_cannonY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1864,6 +2106,7 @@ static PyObject* py_cannonY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonY(id));
 }
 static PyObject* py_cannonBlockX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1876,6 +2119,7 @@ static PyObject* py_cannonBlockX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonBlockX(id));
 }
 static PyObject* py_cannonBlockY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1888,6 +2132,7 @@ static PyObject* py_cannonBlockY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonBlockY(id));
 }
 static PyObject* py_cannonAlive(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1900,6 +2145,7 @@ static PyObject* py_cannonAlive(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonAlive(id));
 }
 static PyObject* py_cannonTeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1916,9 +2162,11 @@ static PyObject* py_cannonTeam(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",cannonTeam(id));
 }
 static PyObject* py_targetCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",targetCountServer());
 }
 static PyObject* py_targetX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1931,6 +2179,7 @@ static PyObject* py_targetX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetX(id));
 }
 static PyObject* py_targetY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1943,6 +2192,7 @@ static PyObject* py_targetY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetY(id));
 }
 static PyObject* py_targetBlockX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1955,6 +2205,7 @@ static PyObject* py_targetBlockX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetBlockX(id));
 }
 static PyObject* py_targetBlockY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1967,6 +2218,7 @@ static PyObject* py_targetBlockY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetBlockY(id));
 }
 static PyObject* py_targetDamage(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1979,6 +2231,7 @@ static PyObject* py_targetDamage(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetDamage(id));
 }
 static PyObject* py_targetAlive(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -1991,6 +2244,7 @@ static PyObject* py_targetAlive(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetAlive(id));
 }
 static PyObject* py_targetTeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2007,9 +2261,11 @@ static PyObject* py_targetTeam(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",targetTeam(id));
 }
 static PyObject* py_baseCountServer(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",baseCountServer());
 }
 static PyObject* py_baseX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2022,6 +2278,7 @@ static PyObject* py_baseX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseX(id));
 }
 static PyObject* py_baseY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2034,6 +2291,7 @@ static PyObject* py_baseY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseY(id));
 }
 static PyObject* py_baseBlockX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2046,6 +2304,7 @@ static PyObject* py_baseBlockX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseBlockX(id));
 }
 static PyObject* py_baseBlockY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2058,6 +2317,7 @@ static PyObject* py_baseBlockY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseBlockY(id));
 }
 static PyObject* py_baseId(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2070,6 +2330,7 @@ static PyObject* py_baseId(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseId(id));
 }
 static PyObject* py_baseTeam(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int id;
   if (!PyArg_ParseTuple(args, "i", &id)) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2086,9 +2347,11 @@ static PyObject* py_baseTeam(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",baseTeam(id));
 }
 static PyObject* py_itemCountScreen(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   return Py_BuildValue("i",itemCountScreen());
 }
 static PyObject* py_itemX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2102,6 +2365,7 @@ static PyObject* py_itemX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",itemX(idx));
 }
 static PyObject* py_itemY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2115,6 +2379,7 @@ static PyObject* py_itemY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",itemY(idx));
 }
 static PyObject* py_itemType(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2128,6 +2393,7 @@ static PyObject* py_itemType(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",itemType(idx));
 }
 static PyObject* py_itemRandom(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2141,6 +2407,7 @@ static PyObject* py_itemRandom(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("i",itemRandom(idx));
 }
 static PyObject* py_itemVelX(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2154,6 +2421,7 @@ static PyObject* py_itemVelX(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",itemVelX(idx));
 }
 static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2167,6 +2435,7 @@ static PyObject* py_itemVelY(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",itemVelY(idx));
 }
 static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2180,6 +2449,7 @@ static PyObject* py_itemDist(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",itemDist(idx));
 }
 static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2193,6 +2463,7 @@ static PyObject* py_itemSpeed(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",itemSpeed(idx));
 }
 static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
@@ -2206,6 +2477,7 @@ static PyObject* py_itemTrackingRad(PyObject* pySelf, PyObject* args) {
   return Py_BuildValue("d",itemTrackingRad(idx));
 }
 static PyObject* py_itemTrackingDeg(PyObject* pySelf, PyObject* args) {
+  only_available_if_connected
   int idx, check;
   if (!PyArg_ParseTuple(args, "i", &idx)){
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
