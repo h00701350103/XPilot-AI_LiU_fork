@@ -616,10 +616,10 @@ int selfY(void) {
   return pos.y;
 }
 int selfRadarX(void) {
-  return pos.x / mapWidthPixels() * radarWidth();
+  return pos.x * radarWidth() / mapWidthPixels();
 }
 int selfRadarY(void) {
-  return pos.y / mapHeightPixels() * radarHeight();
+  return pos.y * radarHeight() / mapHeightPixels();
 }
 double selfVelX(void) {
   return vel.x;
