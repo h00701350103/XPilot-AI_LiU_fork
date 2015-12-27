@@ -303,9 +303,8 @@ void thrust(void) {
 
 //Sets the player's turnspeed. -EGG
 //Will not take effect until the player STARTS turning AFTER this is called. -EGG
-//Parameters: int for speed, min = 0, max = 64. -EGG
 int setTurnSpeed(double speed) {
-  if ( power < 4 || power > 64) {
+  if (speed < MIN_PLAYER_TURNSPEED || speed > MAX_PLAYER_TURNSPEED) {
     return 1;
   }
   Send_turnspeed(speed);
@@ -716,7 +715,7 @@ double getTurnSpeed(void) {
   return turnspeed;
 }
 double getPower(void) {
-  return power;
+  return displayedPower;
 }
 double getTurnResistance(void) {
   return turnresistance;
