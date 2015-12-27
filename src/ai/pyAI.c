@@ -1,3 +1,4 @@
+#include <math.h> // for isnan
 #include <Python.h>
 #include "commonAI.h"
 #include "const.h" // to be able to include ../common/setup.h
@@ -756,7 +757,13 @@ static PyObject* py_selfFuelCurrent(PyObject* pySelf, PyObject* args) {
 }
 static PyObject* py_selfMass(PyObject* pySelf, PyObject* args) {
   only_available_if_connected
-  return Py_BuildValue("d", selfMass());
+  double result = selfMass();
+  if (isnan(result)) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "client is unaware of its mass immediately after starting");
+      return NULL;
+  }
+  return Py_BuildValue("d", result);
 }
 static PyObject* py_closestRadarId(PyObject* pySelf, PyObject* args) {
   only_available_if_connected
