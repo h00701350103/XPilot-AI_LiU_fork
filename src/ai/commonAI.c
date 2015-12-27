@@ -132,7 +132,6 @@ struct AI_msg_struct {
 } AI_msg[AI_MSGMAX];
 
 int AI_delaystart;
-int AI_alerttimemult;
 
 double AI_radToDeg(double rad) {
   return rad * 180.0 / PI_AI;
@@ -335,8 +334,11 @@ int setTurnResistance(double s) {
 //~ //Shooting methods -JNE
 void fireShot(void) {
   press_release_key(XK_Return);
-  if (reload==0) {
-    reload = storedOptions[getOption("firerepeatrate")].intValue - 1; //TODO: Foolproof
+  if (reload == 0) {
+    int option_index = getOption("firerepeatrate");
+    if (option_index >= 0) {
+      reload = storedOptions[option_index].intValue - 1;
+    }
   }
 }
 void fireMissile(void) {
@@ -2336,8 +2338,10 @@ void commonInject(void) {
     sendOptions();
   if (AI_delaystart == 0) {
     fillOptions();
+    // prime server option firerepeatrate for fireShot()
     getOption("firerepeatrate");
   }
+  reload = reload > 0 ? reload-1 : 0;
   AI_delaystart++;
 }
 //END inject -EGG
@@ -2347,7 +2351,6 @@ void headlessMode() {
 }
 int commonStart(int argc, char* argv[], void (*injectFnPtr)(void)) {
   AI_delaystart = 0;
-  AI_alerttimemult = 5;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~\nAI INTERFACE INITIALIZED\n~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
   return ai_main(argc, argv, injectFnPtr);
 }
