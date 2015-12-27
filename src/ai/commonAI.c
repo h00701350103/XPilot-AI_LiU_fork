@@ -596,7 +596,7 @@ int removeTalkMsg(int i) {
 }
 char* scanGameMsg(int id) {
   if (id < MAX_MSGS) {
-    return TalkMsg[id]->txt;
+    return GameMsg[id]->txt;
   }
   return "invalid id";
 }
