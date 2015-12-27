@@ -1824,7 +1824,7 @@ static PyObject* py_laserHeadingRad(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_IndexError, "invalid value for index");
     return NULL;
   }
-  return Py_BuildValue("i",laserHeadingRad(id));
+  return Py_BuildValue("d", laserHeadingRad(id));
 }
 static PyObject* py_ballCountScreen(PyObject* pySelf, PyObject* args) {
   only_available_if_connected
