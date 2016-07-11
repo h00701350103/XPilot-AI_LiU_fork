@@ -245,7 +245,7 @@ int laserY(int id);
 int laserLen(int id);
 int laserHeadingXdeg(int id);
 int laserHeadingDeg(int id);
-int laserHeadingRad(int id);
+double laserHeadingRad(int id);
 int ballCountScreen(void);
 int ballIdCheck(int id);
 int ballX(int id);

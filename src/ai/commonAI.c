@@ -2084,7 +2084,7 @@ int laserHeadingXdeg(int id) {
 int laserHeadingDeg(int id) {
   return AI_xdegToDeg(laserHeadingXdeg(id));
 }
-int laserHeadingRad(int id) {
+double laserHeadingRad(int id) {
   return AI_xdegToRad(laserHeadingXdeg(id));
 }
 //Ball Functions - hatten
