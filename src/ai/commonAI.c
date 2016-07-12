@@ -768,16 +768,16 @@ int selfFuelCurrent(void) {
 //numTanks is _never_ set in the program
 //#define FUEL_MASS(f)    ((f)*0.005/FUEL_SCALE_FACT
 double selfMass(void) {
-  int i;
-  double shipMass = 20, minItemMass=1, itemMass=0;
+  int i, j;
+  double shipMass, minItemMass;
+  double itemMass = 0;
   i = getOption("shipmass");
-  if (i>=0) {
-    shipMass = storedOptions[i].doubleValue;
+  j = getOption("minitemmass");
+  if (i < 0 || j < 0) {
+      return NAN;
   }
-  i = getOption("minitemmass");
-  if (i>=0) {
-    minItemMass = storedOptions[i].doubleValue;
-  }
+  shipMass = storedOptions[i].doubleValue;
+  minItemMass = storedOptions[j].doubleValue;
   double fuelMass = FUEL_MASS(fuelSum);
   for (i = 1;i < 20;i++) {
     itemMass += numItems[i]*minItemMass;
@@ -2340,6 +2340,9 @@ void commonInject(void) {
     fillOptions();
     // prime server option firerepeatrate for fireShot()
     getOption("firerepeatrate");
+    // prime server options shipmass and minitemmass for selfMass()
+    getOption("shipmass");
+    getOption("minitemmass");
   }
   reload = reload > 0 ? reload-1 : 0;
   AI_delaystart++;
