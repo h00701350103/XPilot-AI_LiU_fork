@@ -36,7 +36,7 @@
 #define	LocalGuru xpilot@xpilot.org	/* The one to contact for problems */
 #endif /* LocalGuru */
 
-PREFIX = /home/TDDD63/projects/xpilot-ai-2015
+PREFIX = /home/TDDD63/projects/xpilot-ai-2016
 
 /* Manual pages for games usually go to section 6. */
 MANSUFFIX = 6
