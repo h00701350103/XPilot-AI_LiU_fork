@@ -2516,6 +2516,12 @@ static PyObject* py_switchLoop(PyObject* pySelf, PyObject* args) {
 }
 void AI_loop() {
   if (PyCallable_Check(py_loop)) PyObject_CallObject(py_loop,NULL);
+  if(PyErr_Occurred() != NULL) {
+    printf("An exception occurred in your Python call-back function.\n");
+    printf("You may wish to catch and print exceptions for more information.\n");
+    printf("Exiting pyAI.\n");
+    exit(1);
+  }
 }
 
 //END L00PZ -EGG
