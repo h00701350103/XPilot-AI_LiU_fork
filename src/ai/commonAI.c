@@ -767,6 +767,9 @@ int selfFuelCurrent(void) {
 //TODO: currentTank?
 //numTanks is _never_ set in the program
 //#define FUEL_MASS(f)    ((f)*0.005/FUEL_SCALE_FACT
+
+#define NAN (0.0/0.0)
+
 double selfMass(void) {
   int i, j;
   double shipMass, minItemMass;
@@ -774,7 +777,7 @@ double selfMass(void) {
   i = getOption("shipmass");
   j = getOption("minitemmass");
   if (i < 0 || j < 0) {
-      return NAN;
+    return NAN;
   }
   shipMass = storedOptions[i].doubleValue;
   minItemMass = storedOptions[j].doubleValue;
