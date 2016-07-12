@@ -174,7 +174,7 @@ static PyObject* py_setTurnSpeed(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   if (setTurnSpeed(s)) {
-    PyErr_SetString(PyExc_ValueError, "valid values are 4-64");
+    PyErr_SetString(PyExc_ValueError, "valid values are 4.0-64.0");
     return NULL;
   }
   Py_RETURN_NONE;
