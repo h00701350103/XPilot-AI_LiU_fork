@@ -661,6 +661,10 @@ int Handle_ball(int x, int y, int id)
 int Handle_ship(int x, int y, int id, int dir, vector vel, int shield, int cloak, int eshield, 
 				int phased, int deflector)
 {
+    // Ignore ships corresponding to players the client is not aware of.
+    if (Other_by_id(id) == NULL) {
+        return 0;
+    }
     ship_t	t;
 
     t.x = x;
