@@ -890,6 +890,10 @@ static PyObject* py_shipId(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  if (shipIdCheck(idx) != 0) {     
+    PyErr_SetString(PyExc_TypeError, "No ship with that id");     
+    return NULL;   
+  }
   return Py_BuildValue("i", shipId(idx));
 }
 static PyObject* py_shipX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of ship at an index -JNE
