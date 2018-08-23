@@ -27,8 +27,8 @@ static PyObject* py_turnRight(PyObject* pySelf, PyObject*args) { //turns right a
   turnRight();
   Py_RETURN_NONE;
 }
-void turnResistanceCheck(void) {
-  only_available_if_connected
+static void turnResistanceCheck(void) {
+//  only_available_if_connected
   if (getTurnResistance() != 0) {
     printf("WARNING: turnResistance != 0\n");
   }
@@ -896,6 +896,9 @@ static PyObject* py_shipId(PyObject* pySelf, PyObject* args) {
   }
   return Py_BuildValue("i", shipId(idx));
 }
+static PyObject* py_ship2serverId(PyObject* pySelf, PyObject* args) {    // Alias for the sake of naming clarity -dnleng
+  return py_shipId(pySelf, args);
+}
 static PyObject* py_shipX(PyObject* pySelf, PyObject* args) {    //returns x coordinate of ship at an index -JNE
   only_available_if_connected
   int idx;
@@ -1064,6 +1067,9 @@ static PyObject* py_playerId(PyObject* pySelf, PyObject* args) {    //returns li
     return NULL;
   }
   return Py_BuildValue("i",playerId(idx));
+}
+static PyObject* py_player2serverId(PyObject* pySelf, PyObject* args) {    // Alias for the sake of naming clarity -dnleng
+  return py_playerId(pySelf, args);
 }
 static PyObject* py_playerLives(PyObject* pySelf, PyObject* args) {    //returns lives of player at an index -JNE
   only_available_if_connected
@@ -2722,6 +2728,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"shipCountScreen",py_shipCountScreen,METH_NOARGS,"Returns the number of ships on the screen"},
     //{"closestShipIdx",py_closestShipIdx,METH_NOARGS,"Returns the Closest ship's IDX"}, //worthless as they are sorted according to distance, though i see no reason for that
     {"shipId",py_shipId,METH_VARARGS,"Returns the Specified Enemy's Id"},
+    {"ship2serverId",py_shipId,METH_VARARGS,"Returns the Specified Enemy's Id"},
     //idx functions -JRA
     {"shipDistance",py_shipDistance,METH_VARARGS,"Returns the Distance between the ship and the Specified Enemy"},
     {"shipSpeed",py_shipSpeed,METH_VARARGS,"Returns the Speed of the Specified Enemy"},
@@ -2740,6 +2747,7 @@ static PyMethodDef libpyAI_methods[] = {
     {"pausedCountServer",py_pausedCountServer,METH_NOARGS,"Returns number of paused players on the server."},
     {"tankCountServer",py_tankCountServer,METH_NOARGS,"Returns number of tanks on the server."},
     {"playerId",py_playerId,METH_VARARGS,"Returns the Specified Enemy's Id"},
+    {"player2serverId",py_playerId,METH_VARARGS,"Returns the Specified Enemy's Id"},
     {"playerLives",py_playerLives,METH_VARARGS,"Returns the Specified Enemy's Remaining Lives"},
     {"playerTeam",py_playerTeam,METH_VARARGS,"Returns the Specified Enemy's Team"},
     {"playerName",py_playerName,METH_VARARGS,"Returns the Specified Enemy's Name"},
