@@ -187,7 +187,7 @@ static PyObject* py_setPower(PyObject* pySelf, PyObject* args) {
     return NULL;
   }
   if (setPower(s)) {
-    PyErr_SetString(PyExc_ValueError, "valid values are 4-64");
+    PyErr_SetString(PyExc_ValueError, "valid values are 5-55");
     return NULL;
   }
   Py_RETURN_NONE;
