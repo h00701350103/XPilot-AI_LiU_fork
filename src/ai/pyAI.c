@@ -1216,6 +1216,11 @@ static PyObject* py_mapData(PyObject* pySelf, PyObject* args) {
     PyErr_SetString(PyExc_TypeError, "invalid parameter");
     return NULL;
   }
+  // Prevent segfault on out of bounds values for mapData -dnleng
+  if (x >= mapWidthBlocks() || y >= mapHeightBlocks()){
+    PyErr_SetString(PyExc_TypeError, "Value out of bounds");
+    return NULL;
+  }
   return Py_BuildValue("i",mapData(x, y));
 }
 static PyObject* py_getOption(PyObject* pySelf, PyObject* args) {
