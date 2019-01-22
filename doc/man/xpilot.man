@@ -1605,10 +1605,10 @@ for details see the provided LICENSE file.
 .SH FILES
 .PD 0
 .TP 40
-.B /opt/xpilot/lib/xpilot/motd
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/motd
 Message of the day.
 .TP
-.B /opt/xpilot/lib/xpilot/sounds
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/sounds
 File containing the sound to sound-file mapping.
 .PD
 

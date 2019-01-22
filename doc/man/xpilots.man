@@ -124,7 +124,7 @@ or the equivalent
 .B -map fuzz2.xp
 is passed as command line arguments, the server will try to locate a file
 called \fBfuzz2.xp\fP in the current directory, or in a predefined
-directory (default is /opt/xpilot/lib/xpilot/maps/).
+directory (default is /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/maps/).
 
 .TP 15
 .B -contactPort or port \fIinteger\fP
@@ -376,16 +376,16 @@ for details see the provided LICENSE file.
 
 .PD 0
 .TP 40
-.B /opt/xpilot/lib/xpilot/maps/
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/maps/
 Miscellaneous maps.
 .TP 40
-.B /opt/xpilot/lib/xpilot/log
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/log
 Log file.
 .TP 40
-.B /opt/xpilot/lib/xpilot/defaults
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/defaults
 Defaults file.
 .TP 40
-.B /opt/xpilot/lib/xpilot/password
+.B /home/TDDE25/projects/xpilot-ai-2018/lib/xpilot/password
 Password file.
 .PD
 
